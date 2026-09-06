@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as CallingAgentIndexRouteImport } from './routes/calling-agent.index'
 import { Route as LeadsIndexRouteImport } from './routes/leads.index'
 import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -30,6 +31,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallingAgentIndexRoute = CallingAgentIndexRouteImport.update({
+  id: '/calling-agent/',
+  path: '/calling-agent/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadsIndexRoute = LeadsIndexRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof InventoryRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/calling-agent/': typeof CallingAgentIndexRoute
   '/leads/': typeof LeadsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof InventoryRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/calling-agent': typeof CallingAgentIndexRoute
   '/leads': typeof LeadsIndexRoute
   '/projects': typeof ProjectsIndexRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/inventory': typeof InventoryRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/calling-agent/': typeof CallingAgentIndexRoute
   '/leads/': typeof LeadsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/leads/$leadId'
     | '/projects/$projectId'
+    | '/calling-agent/'
     | '/leads/'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/leads/$leadId'
     | '/projects/$projectId'
+    | '/calling-agent'
     | '/leads'
     | '/projects'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/leads/$leadId'
     | '/projects/$projectId'
+    | '/calling-agent/'
     | '/leads/'
     | '/projects/'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   InventoryRoute: typeof InventoryRoute
   LeadsLeadIdRoute: typeof LeadsLeadIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+  CallingAgentIndexRoute: typeof CallingAgentIndexRoute
   LeadsIndexRoute: typeof LeadsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory'
       fullPath: '/inventory'
       preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calling-agent/': {
+      id: '/calling-agent/'
+      path: '/calling-agent'
+      fullPath: '/calling-agent/'
+      preLoaderRoute: typeof CallingAgentIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leads/': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryRoute: InventoryRoute,
   LeadsLeadIdRoute: LeadsLeadIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+  CallingAgentIndexRoute: CallingAgentIndexRoute,
   LeadsIndexRoute: LeadsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }
