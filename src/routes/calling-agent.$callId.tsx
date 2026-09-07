@@ -88,7 +88,7 @@ function CallDetail() {
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
-          <SectionCard title="Call summary" description={campaign ? `Campaign: ${campaign.name}` : undefined}>
+          <SectionCard title="Call summary" description={`Campaign: ${campaign?.name ?? "—"}`}>
             <div className="grid gap-4 sm:grid-cols-4">
               <Field label="Status" value={<StatusBadge status={call.status} />} />
               <Field label="Outcome" value={call.outcome ? <StatusBadge status={call.outcome} /> : <span className="text-sm text-muted-foreground">In flight</span>} />
