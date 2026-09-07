@@ -151,7 +151,7 @@ function CallDetail() {
         </div>
 
         <div className="space-y-4">
-          <AIPanel title="Recommended next action" icon={Sparkles}>
+          <AIPanel title="Recommended next action" subtitle="Generated from this conversation">
             <p className="text-sm font-medium">{call.nextAction}</p>
             <div className="mt-3">
               <ConfidenceBar value={Math.min(96, 55 + Math.round(call.intentScore * 0.4))} />
@@ -168,7 +168,7 @@ function CallDetail() {
               <Button size="sm" variant="outline" onClick={() => toast("Recommendation dismissed")}>Dismiss</Button>
             </div>
             <div className="mt-4">
-              <GovernanceNote />
+              <GovernanceNote requirement={campaign?.requiresApproval ?? "Sales Manager approval required"} />
             </div>
           </AIPanel>
 

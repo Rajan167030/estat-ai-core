@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as CallingAgentIndexRouteImport } from './routes/calling-agent.index'
+import { Route as CallingAgentCallIdRouteImport } from './routes/calling-agent.$callId'
 import { Route as LeadsIndexRouteImport } from './routes/leads.index'
 import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -36,6 +37,11 @@ const InventoryRoute = InventoryRouteImport.update({
 const CallingAgentIndexRoute = CallingAgentIndexRouteImport.update({
   id: '/calling-agent/',
   path: '/calling-agent/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallingAgentCallIdRoute = CallingAgentCallIdRouteImport.update({
+  id: '/calling-agent/$callId',
+  path: '/calling-agent/$callId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadsIndexRoute = LeadsIndexRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/calling-agent/$callId': typeof CallingAgentCallIdRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/calling-agent/': typeof CallingAgentIndexRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/calling-agent/$callId': typeof CallingAgentCallIdRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/calling-agent': typeof CallingAgentIndexRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/calling-agent/$callId': typeof CallingAgentCallIdRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/calling-agent/': typeof CallingAgentIndexRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/inventory'
+    | '/calling-agent/$callId'
     | '/leads/$leadId'
     | '/projects/$projectId'
     | '/calling-agent/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/inventory'
+    | '/calling-agent/$callId'
     | '/leads/$leadId'
     | '/projects/$projectId'
     | '/calling-agent'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/inventory'
+    | '/calling-agent/$callId'
     | '/leads/$leadId'
     | '/projects/$projectId'
     | '/calling-agent/'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   InventoryRoute: typeof InventoryRoute
+  CallingAgentCallIdRoute: typeof CallingAgentCallIdRoute
   LeadsLeadIdRoute: typeof LeadsLeadIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   CallingAgentIndexRoute: typeof CallingAgentIndexRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallingAgentIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calling-agent/$callId': {
+      id: '/calling-agent/$callId'
+      path: '/calling-agent/$callId'
+      fullPath: '/calling-agent/$callId'
+      preLoaderRoute: typeof CallingAgentCallIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leads/': {
       id: '/leads/'
       path: '/leads'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   InventoryRoute: InventoryRoute,
+  CallingAgentCallIdRoute: CallingAgentCallIdRoute,
   LeadsLeadIdRoute: LeadsLeadIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   CallingAgentIndexRoute: CallingAgentIndexRoute,

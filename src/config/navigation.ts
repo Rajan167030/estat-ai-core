@@ -27,6 +27,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Projects", to: "/projects", icon: Building2 },
       { label: "Inventory", to: "/inventory", icon: Grid3x3 },
       { label: "Bookings", to: "/bookings", icon: FileSignature },
+      { label: "Calling Agent", to: "/calling-agent", icon: PhoneCall },
     ],
   },
   {
