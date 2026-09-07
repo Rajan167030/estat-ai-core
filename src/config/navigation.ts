@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, Building2, Grid3x3, FileSignature, Wallet, Handshake,
-  Percent, FileText, ScrollText, KeyRound, UserRound, Sparkles, ShieldCheck, History,
+  Percent, FileText, ScrollText, KeyRound, UserRound, Sparkles, ShieldCheck, History, PhoneCall,
   type LucideIcon,
 } from "lucide-react";
 
