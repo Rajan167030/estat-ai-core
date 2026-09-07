@@ -18,7 +18,7 @@ function mulberry(seed: number) {
   };
 }
 const rnd = mulberry(20260902);
-const pick = <T,>(arr: readonly T[]): T => arr[Math.floor(rnd() * arr.length)];
+const pick = <T,>(arr: readonly T[]): T => arr[Math.floor(rnd() * arr.length)] as T;
 const int = (min: number, max: number) => min + Math.floor(rnd() * (max - min + 1));
 const chance = (p: number) => rnd() < p;
 const iso = (dayOffset: number) =>
@@ -244,9 +244,9 @@ export const projects: Project[] = PROJECT_NAMES.map((pname, i) => {
   return {
     id: `PRJ-${100 + i}`,
     name: pname,
-    city: CITIES[i % CITIES.length],
+    city: CITIES[i % CITIES.length]!,
     locality: pick(["Whitefield", "Hinjewadi", "Gachibowli", "Andheri East", "OMR", "Bopal", "Sector 150", "Kakkanad"]),
-    rera: `RERA/${CITIES[i % CITIES.length].slice(0, 3).toUpperCase()}/2024/${4000 + i * 7}`,
+    rera: `RERA/${CITIES[i % CITIES.length]!.slice(0, 3).toUpperCase()}/2024/${4000 + i * 7}`,
     towers: ["A", "B", "C", "D"].slice(0, int(2, 4)),
     totalUnits,
     available,
@@ -268,7 +268,7 @@ projects.forEach((p) => {
   p.towers.forEach((tower) => {
     for (let floor = 1; floor <= 14; floor++) {
       for (let n = 1; n <= 4; n++) {
-        const config = CONFIGS[(floor + n) % CONFIGS.length];
+        const config = CONFIGS[(floor + n) % CONFIGS.length]!;
         const saleable = 620 + CONFIGS.indexOf(config) * 340 + int(0, 90);
         const basePrice = saleable * p.ratePerSqft;
         const floorPremium = Math.round(basePrice * floor * 0.0035);
@@ -311,8 +311,8 @@ export const partners: Partner[] = Array.from({ length: 48 }, (_, i) => {
     firm: `${pick(["Rajan", "ABC", "Skyline", "Prime", "Urban", "Nexa", "Landmark", "Vista", "Metro", "Anand"])} ${pick(["Properties", "Realty", "Estates", "Homes", "Consultants"])}`,
     contact: name(),
     city: pick(CITIES),
-    kyc: chance(0.82) ? "Verified" : chance(0.6) ? "Pending" : "Rejected",
-    tier: bookings > 22 ? "Platinum" : bookings > 10 ? "Gold" : "Silver",
+    kyc: (chance(0.82) ? "Verified" : chance(0.6) ? "Pending" : "Rejected") as Partner["kyc"],
+    tier: (bookings > 22 ? "Platinum" : bookings > 10 ? "Gold" : "Silver") as Partner["tier"],
     leads,
     visits,
     bookings,
@@ -338,7 +338,7 @@ export const leads: Lead[] = Array.from({ length: 260 }, (_, i) => {
     email: `contact${i}@mail.com`,
     projectId: project.id,
     source,
-    partnerId: source === "Channel Partner" ? pick(partners).id : undefined,
+    ...(source === "Channel Partner" ? { partnerId: pick(partners).id } : {}),
     score,
     status,
     owner: pick(EXECS),
@@ -353,9 +353,9 @@ export const leads: Lead[] = Array.from({ length: 260 }, (_, i) => {
 });
 
 export const bookings: Booking[] = Array.from({ length: 96 }, (_, i) => {
-  const lead = leads[(i * 3) % leads.length];
+  const lead = leads[(i * 3) % leads.length]!;
   const project = projects.find((p) => p.id === lead.projectId)!;
-  const unit = units.find((u) => u.projectId === project.id && u.status !== "Available") ?? units[i];
+  const unit = units.find((u) => u.projectId === project.id && u.status !== "Available") ?? units[i]!;
   const amount = unit.price;
   return {
     id: `BK-${1000 + i}`,
@@ -366,9 +366,9 @@ export const bookings: Booking[] = Array.from({ length: 96 }, (_, i) => {
     amount,
     discount: chance(0.5) ? int(50000, 380000) : 0,
     executive: pick(EXECS),
-    partnerId: lead.partnerId ?? (chance(0.4) ? pick(partners).id : undefined),
+    ...(lead.partnerId ? { partnerId: lead.partnerId } : chance(0.4) ? { partnerId: pick(partners).id } : {}),
     date: iso(-int(1, 210)),
-    status: chance(0.78) ? "Confirmed" : chance(0.7) ? "Pending" : "Cancelled",
+    status: (chance(0.78) ? "Confirmed" : chance(0.7) ? "Pending" : "Cancelled") as Booking["status"],
   };
 }).sort((a, b) => (a.date < b.date ? 1 : -1));
 
@@ -418,7 +418,7 @@ export const commissions: Commission[] = bookings
   });
 
 export const documents: DocumentRecord[] = Array.from({ length: 54 }, (_, i) => {
-  const b = bookings[i % bookings.length];
+  const b = bookings[i % bookings.length]!;
   const unit = units.find((u) => u.id === b.unitId)!;
   const low = chance(0.35);
   return {
@@ -507,7 +507,7 @@ export const auditLog: AuditEntry[] = Array.from({ length: 60 }, (_, i) => {
     { action: "Approved discount", entity: `BK-${1000 + (i % 96)}`, oldValue: "₹1.2L", newValue: "₹2.4L" },
     { action: "Reassigned lead", entity: `LEAD-${10400 + i}`, oldValue: "Neha Verma", newValue: "Amit Sharma" },
     { action: "Released commission", entity: `COM-${500 + i}`, oldValue: "Payable", newValue: "Paid" },
-    { action: "Updated RERA filing", entity: projects[i % projects.length].name, oldValue: "Draft", newValue: "Filed" },
+    { action: "Updated RERA filing", entity: projects[i % projects.length]!.name, oldValue: "Draft", newValue: "Filed" },
     { action: "Verified document", entity: `DOC-${3000 + i}`, oldValue: "Needs Review", newValue: "Verified" },
     { action: "Changed unit status", entity: `B-${700 + i}`, oldValue: "Hold", newValue: "Booked" },
   ];
@@ -535,10 +535,10 @@ export const reraItems: ReraItem[] = projects.slice(0, 10).flatMap((p, i) => [
 ]);
 
 export const possessionItems: PossessionItem[] = Array.from({ length: 34 }, (_, i) => {
-  const b = bookings[i % bookings.length];
+  const b = bookings[i % bookings.length]!;
   const unit = units.find((u) => u.id === b.unitId)!;
   const stages = ["Construction", "Snagging", "Final Payment", "Possession Ready", "Handover", "RWA"] as const;
-  const stage = stages[i % stages.length];
+  const stage = stages[i % stages.length]!;
   return {
     id: `POS-${i}`,
     customer: b.customer,

@@ -234,7 +234,7 @@ export const callHistory: CallRecord[] = leads.slice(6, 60).map((lead, i) => {
             : "Send brochure and retry in 2 days",
     transcript: connected ? transcriptFor(lead, outcome) : [],
     objections: connected ? [pick(OBJECTIONS), ...(chance(0.35) ? [pick(OBJECTIONS)] : [])] : [],
-    handoffTo: outcome === "Site visit booked" ? lead.owner : undefined,
+    ...(outcome === "Site visit booked" ? { handoffTo: lead.owner } : {}),
   };
 });
 
