@@ -189,8 +189,8 @@ function DashboardPage() {
           <SectionCard title="Sales funnel" description="Last 90 days">
             <ul className="space-y-2.5">
               {funnel.map((f, i) => {
-                const width = (f.value / funnel[0].value) * 100;
-                const conv = i === 0 ? 100 : (f.value / funnel[i - 1].value) * 100;
+                const width = (f.value / (funnel[0]?.value ?? 1)) * 100;
+                const conv = i === 0 ? 100 : (f.value / (funnel[i - 1]?.value ?? 1)) * 100;
                 return (
                   <li key={f.stage}>
                     <div className="flex items-baseline justify-between text-xs">
