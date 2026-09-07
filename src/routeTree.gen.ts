@@ -10,9 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiInsightsRouteImport } from './routes/ai-insights'
+import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as CallingAgentIndexRouteImport } from './routes/calling-agent.index'
+import { Route as CallingAgentCallIdRouteImport } from './routes/calling-agent.$callId'
 import { Route as LeadsIndexRouteImport } from './routes/leads.index'
 import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -21,6 +24,16 @@ import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projec
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiInsightsRoute = AiInsightsRouteImport.update({
+  id: '/ai-insights',
+  path: '/ai-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApprovalsRoute = ApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -36,6 +49,11 @@ const InventoryRoute = InventoryRouteImport.update({
 const CallingAgentIndexRoute = CallingAgentIndexRouteImport.update({
   id: '/calling-agent/',
   path: '/calling-agent/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallingAgentCallIdRoute = CallingAgentCallIdRouteImport.update({
+  id: '/calling-agent/$callId',
+  path: '/calling-agent/$callId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadsIndexRoute = LeadsIndexRouteImport.update({
@@ -61,8 +79,11 @@ const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-insights': typeof AiInsightsRoute
+  '/approvals': typeof ApprovalsRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/calling-agent/$callId': typeof CallingAgentCallIdRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/calling-agent/': typeof CallingAgentIndexRoute
@@ -71,8 +92,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-insights': typeof AiInsightsRoute
+  '/approvals': typeof ApprovalsRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/calling-agent/$callId': typeof CallingAgentCallIdRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/calling-agent': typeof CallingAgentIndexRoute
@@ -82,8 +106,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-insights': typeof AiInsightsRoute
+  '/approvals': typeof ApprovalsRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/calling-agent/$callId': typeof CallingAgentCallIdRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/calling-agent/': typeof CallingAgentIndexRoute
@@ -94,8 +121,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-insights'
+    | '/approvals'
     | '/dashboard'
     | '/inventory'
+    | '/calling-agent/$callId'
     | '/leads/$leadId'
     | '/projects/$projectId'
     | '/calling-agent/'
@@ -104,8 +134,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-insights'
+    | '/approvals'
     | '/dashboard'
     | '/inventory'
+    | '/calling-agent/$callId'
     | '/leads/$leadId'
     | '/projects/$projectId'
     | '/calling-agent'
@@ -114,8 +147,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-insights'
+    | '/approvals'
     | '/dashboard'
     | '/inventory'
+    | '/calling-agent/$callId'
     | '/leads/$leadId'
     | '/projects/$projectId'
     | '/calling-agent/'
@@ -125,8 +161,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiInsightsRoute: typeof AiInsightsRoute
+  ApprovalsRoute: typeof ApprovalsRoute
   DashboardRoute: typeof DashboardRoute
   InventoryRoute: typeof InventoryRoute
+  CallingAgentCallIdRoute: typeof CallingAgentCallIdRoute
   LeadsLeadIdRoute: typeof LeadsLeadIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   CallingAgentIndexRoute: typeof CallingAgentIndexRoute
@@ -141,6 +180,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-insights': {
+      id: '/ai-insights'
+      path: '/ai-insights'
+      fullPath: '/ai-insights'
+      preLoaderRoute: typeof AiInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/approvals': {
+      id: '/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof ApprovalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -162,6 +215,13 @@ declare module '@tanstack/react-router' {
       path: '/calling-agent'
       fullPath: '/calling-agent/'
       preLoaderRoute: typeof CallingAgentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calling-agent/$callId': {
+      id: '/calling-agent/$callId'
+      path: '/calling-agent/$callId'
+      fullPath: '/calling-agent/$callId'
+      preLoaderRoute: typeof CallingAgentCallIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leads/': {
@@ -197,8 +257,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiInsightsRoute: AiInsightsRoute,
+  ApprovalsRoute: ApprovalsRoute,
   DashboardRoute: DashboardRoute,
   InventoryRoute: InventoryRoute,
+  CallingAgentCallIdRoute: CallingAgentCallIdRoute,
   LeadsLeadIdRoute: LeadsLeadIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   CallingAgentIndexRoute: CallingAgentIndexRoute,

@@ -35,7 +35,7 @@ const STATUS_STYLE: Record<UnitStatus, string> = {
 const STATUSES: UnitStatus[] = ["Available", "Hold", "Booked", "Sold", "Possession Ready"];
 
 function InventoryPage() {
-  const [projectId, setProjectId] = useState(projects[0].id);
+  const [projectId, setProjectId] = useState(projects[0]!.id);
   const [tower, setTower] = useState("all");
   const [config, setConfig] = useState("all");
   const [status, setStatus] = useState("all");
@@ -152,7 +152,7 @@ function InventoryPage() {
             )}
           </div>
 
-          <AIPanel title="AI Pricing Recommendation" subtitle={project.towers[0] ? `Tower ${project.towers[0]}` : undefined}>
+          <AIPanel title="AI Pricing Recommendation" subtitle={`Tower ${project.towers[0] ?? "A"}`}>
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-md border border-border bg-card px-3 py-2">
                 <p className="label-xs">Current price</p>
