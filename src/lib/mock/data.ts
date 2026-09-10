@@ -511,7 +511,7 @@ export const auditLog: AuditEntry[] = Array.from({ length: 60 }, (_, i) => {
     { action: "Verified document", entity: `DOC-${3000 + i}`, oldValue: "Needs Review", newValue: "Verified" },
     { action: "Changed unit status", entity: `B-${700 + i}`, oldValue: "Hold", newValue: "Booked" },
   ];
-  const t = templates[i % templates.length];
+  const t = templates[i % templates.length]!;
   return {
     id: `AUD-${8000 + i}`,
     time: iso(-i * 0.21),

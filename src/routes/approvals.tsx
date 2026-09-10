@@ -56,6 +56,7 @@ function ApprovalsPage() {
         <TabsContent value={tab} className="mt-4">
           {filtered.length === 0 ? (
             <EmptyState
+              icon={ShieldCheck}
               title="Nothing waiting here"
               description="No approval requests of this type are pending right now."
             />
