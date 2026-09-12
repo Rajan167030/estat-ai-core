@@ -9,7 +9,12 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "export:rera-csv": "bun run scripts/export-rera-csv.ts",
+    "export:listings-csv": "bun run scripts/export-listings-csv.ts",
+    "scrape:rera-live": "bun run scripts/scrape-rera-live.ts",
+    "call:live": "bun run scripts/start-live-call.ts",
+    "extract:document": "bun run scripts/extract-document.ts"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -47,6 +52,7 @@
     "@tanstack/react-router": "1.170.18",
     "@tanstack/react-start": "1.168.32",
     "@tanstack/router-plugin": "1.168.23",
+    "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -82,6 +88,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "nitro": "3.0.260603-beta",
+    "playwright": "^1.63.0",
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",

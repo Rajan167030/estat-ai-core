@@ -2,6 +2,10 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import {
+  handleExotelWebhook,
+  handleTtsAudioRequest,
+} from "./server/calling-agent/live/exotel-webhook";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -46,6 +50,30 @@ function isH3SwallowedErrorBody(body: string): boolean {
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    // Third-party telephony webhooks — plain HTTP endpoints, not TanStack
+    // Start server functions (Exotel POSTs form-encoded bodies and expects
+    // raw XML back, which server functions don't speak). Intercepted here,
+    // before the SPA/SSR handler, since this is the one place guaranteed to
+    // see every request regardless of TanStack Start's routing internals.
+    const url = new URL(request.url);
+    if (url.pathname === "/api/exotel-webhook") {
+      return handleExotelWebhook(request).catch((error) => {
+        console.error(error);
+        return new Response(
+          '<?xml version="1.0" encoding="UTF-8"?><Response><Say>Internal error.</Say><Hangup/></Response>',
+          {
+            headers: { "content-type": "text/xml; charset=utf-8" },
+          },
+        );
+      });
+    }
+    if (url.pathname.startsWith("/api/tts-audio/")) {
+      return handleTtsAudioRequest(request).catch((error) => {
+        console.error(error);
+        return new Response("Internal error", { status: 500 });
+      });
+    }
+
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
