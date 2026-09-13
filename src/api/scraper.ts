@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { RERA_ADAPTERS, RERA_SOURCES } from "../scraper/registry";
-import { getDefaultScraperStore } from "../scraper/store";
-import { runScrape } from "../scraper/pipeline";
-import { LISTING_ADAPTERS, LISTING_SOURCES } from "../scraper/listings/registry";
-import { getDefaultListingStore } from "../scraper/listings/store";
-import { runListingScrape } from "../scraper/listings/pipeline";
+import { RERA_ADAPTERS, RERA_SOURCES } from "../server/scraper/registry";
+import { getDefaultScraperStore } from "../server/scraper/store";
+import { runScrape } from "../server/scraper/pipeline";
+import { LISTING_ADAPTERS, LISTING_SOURCES } from "../server/scraper/listings/registry";
+import { getDefaultListingStore } from "../server/scraper/listings/store";
+import { runListingScrape } from "../server/scraper/listings/pipeline";
 
 export const getScrapeSources = createServerFn({ method: "GET" }).handler(async () => ({
   rera: RERA_SOURCES,

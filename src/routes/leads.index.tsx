@@ -1,10 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { DataTable, KpiCard, PageHeader, StatusBadge, Td, Th, EmptyState } from "@/components/common/primitives";
+import {
+  DataTable,
+  KpiCard,
+  PageHeader,
+  StatusBadge,
+  Td,
+  Th,
+  EmptyState,
+} from "@/components/common/primitives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { leads, partnerName, projectName, projects, SOURCES, totals } from "@/lib/mock/data";
 import { inr, num, relativeDays, shortDate } from "@/lib/format";
 import { Download, Flame, Plus, SearchX, Upload, Users } from "lucide-react";
@@ -15,9 +29,16 @@ export const Route = createFileRoute("/leads/")({
   head: () => ({
     meta: [
       { title: "Leads — Estatum ERP" },
-      { name: "description", content: "Score, filter and act on every real-estate lead with source attribution and follow-up tracking." },
+      {
+        name: "description",
+        content:
+          "Score, filter and act on every real-estate lead with source attribution and follow-up tracking.",
+      },
       { property: "og:title", content: "Leads — Estatum ERP" },
-      { property: "og:description", content: "Lead scoring, source attribution and follow-up discipline for your sales team." },
+      {
+        property: "og:description",
+        content: "Lead scoring, source attribution and follow-up discipline for your sales team.",
+      },
     ],
   }),
   component: LeadsPage,
@@ -29,7 +50,10 @@ function ScoreBar({ score }: { score: number }) {
       <span className="num w-6 text-sm font-semibold">{score}</span>
       <div className="h-1.5 w-14 overflow-hidden rounded-full bg-muted">
         <div
-          className={cn("h-full rounded-full", score > 78 ? "bg-danger" : score > 55 ? "bg-warning" : "bg-muted-foreground")}
+          className={cn(
+            "h-full rounded-full",
+            score > 78 ? "bg-danger" : score > 55 ? "bg-warning" : "bg-muted-foreground",
+          )}
           style={{ width: `${score}%` }}
         />
       </div>
@@ -50,7 +74,9 @@ function LeadsPage() {
           (project === "all" || l.projectId === project) &&
           (status === "all" || l.status === status) &&
           (source === "all" || l.source === source) &&
-          (q === "" || l.name.toLowerCase().includes(q.toLowerCase()) || l.id.toLowerCase().includes(q.toLowerCase())),
+          (q === "" ||
+            l.name.toLowerCase().includes(q.toLowerCase()) ||
+            l.id.toLowerCase().includes(q.toLowerCase())),
       ),
     [q, project, status, source],
   );
@@ -68,7 +94,11 @@ function LeadsPage() {
               <Button variant="outline" size="sm" onClick={() => toast("Import mapping opened.")}>
                 <Upload className="size-4" /> Import
               </Button>
-              <Button variant="outline" size="sm" onClick={() => toast.success("Export queued — you'll get an email.")}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast.success("Export queued — you'll get an email.")}
+              >
                 <Download className="size-4" /> Export
               </Button>
               <Button size="sm" onClick={() => toast.success("New lead form opened.")}>
@@ -93,28 +123,55 @@ function LeadsPage() {
             className="h-9 w-full sm:w-64"
           />
           <Select value={project} onValueChange={setProject}>
-            <SelectTrigger className="h-9 w-[190px]"><SelectValue placeholder="Project" /></SelectTrigger>
+            <SelectTrigger className="h-9 w-[190px]">
+              <SelectValue placeholder="Project" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All projects</SelectItem>
-              {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+              {projects.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="h-9 w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All statuses</SelectItem>
-              {["Hot", "Warm", "Cold", "Converted", "Lost"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {["Hot", "Warm", "Cold", "Converted", "Lost"].map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={source} onValueChange={setSource}>
-            <SelectTrigger className="h-9 w-[170px]"><SelectValue placeholder="Source" /></SelectTrigger>
+            <SelectTrigger className="h-9 w-[170px]">
+              <SelectValue placeholder="Source" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All sources</SelectItem>
-              {SOURCES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {SOURCES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {(q || project !== "all" || status !== "all" || source !== "all") && (
-            <Button variant="ghost" size="sm" onClick={() => { setQ(""); setProject("all"); setStatus("all"); setSource("all"); }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setQ("");
+                setProject("all");
+                setStatus("all");
+                setSource("all");
+              }}
+            >
               Clear
             </Button>
           )}
@@ -125,14 +182,33 @@ function LeadsPage() {
             icon={SearchX}
             title="No leads match these filters"
             description="Try widening the project, status or source filter to see more of your pipeline."
-            action={<Button size="sm" onClick={() => { setQ(""); setProject("all"); setStatus("all"); setSource("all"); }}>Reset filters</Button>}
+            action={
+              <Button
+                size="sm"
+                onClick={() => {
+                  setQ("");
+                  setProject("all");
+                  setStatus("all");
+                  setSource("all");
+                }}
+              >
+                Reset filters
+              </Button>
+            }
           />
         ) : (
           <DataTable
             head={
               <>
-                <Th>Lead</Th><Th>Project</Th><Th>Source</Th><Th>Score</Th><Th>Status</Th>
-                <Th>Assigned to</Th><Th>Last activity</Th><Th>Next follow-up</Th><Th />
+                <Th>Lead</Th>
+                <Th>Project</Th>
+                <Th>Source</Th>
+                <Th>Score</Th>
+                <Th>Status</Th>
+                <Th>Assigned to</Th>
+                <Th>Last activity</Th>
+                <Th>Next follow-up</Th>
+                <Th />
               </>
             }
           >
@@ -141,24 +217,40 @@ function LeadsPage() {
                 <Td>
                   <Link to="/leads/$leadId" params={{ leadId: l.id }} className="block">
                     <span className="font-medium">{l.name}</span>
-                    <span className="block text-xs text-muted-foreground">{l.id} · {inr(l.budget)} · {l.config}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {l.id} · {inr(l.budget)} · {l.config}
+                    </span>
                   </Link>
                 </Td>
                 <Td className="text-muted-foreground">{projectName(l.projectId)}</Td>
                 <Td>
                   <span className="text-xs">{l.source}</span>
-                  {l.partnerId ? <span className="block text-xs text-muted-foreground">{partnerName(l.partnerId)}</span> : null}
+                  {l.partnerId ? (
+                    <span className="block text-xs text-muted-foreground">
+                      {partnerName(l.partnerId)}
+                    </span>
+                  ) : null}
                 </Td>
-                <Td><ScoreBar score={l.score} /></Td>
-                <Td><StatusBadge status={l.status} /></Td>
+                <Td>
+                  <ScoreBar score={l.score} />
+                </Td>
+                <Td>
+                  <StatusBadge status={l.status} />
+                </Td>
                 <Td className="text-muted-foreground">{l.owner}</Td>
                 <Td className="text-muted-foreground">{relativeDays(l.lastActivity)}</Td>
-                <Td className={cn(new Date(l.nextFollowUp) < new Date() ? "font-medium text-danger" : "")}>
+                <Td
+                  className={cn(
+                    new Date(l.nextFollowUp) < new Date() ? "font-medium text-danger" : "",
+                  )}
+                >
                   {shortDate(l.nextFollowUp)}
                 </Td>
                 <Td>
                   <Button asChild variant="ghost" size="sm">
-                    <Link to="/leads/$leadId" params={{ leadId: l.id }}>Open</Link>
+                    <Link to="/leads/$leadId" params={{ leadId: l.id }}>
+                      Open
+                    </Link>
                   </Button>
                 </Td>
               </tr>

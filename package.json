@@ -14,7 +14,8 @@
     "export:listings-csv": "bun run scripts/export-listings-csv.ts",
     "scrape:rera-live": "bun run scripts/scrape-rera-live.ts",
     "call:live": "bun run scripts/start-live-call.ts",
-    "extract:document": "bun run scripts/extract-document.ts"
+    "extract:document": "bun run scripts/extract-document.ts",
+    "generate:og-image": "bun run scripts/generate-og-image.ts"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -59,11 +60,13 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.71.2",
+    "react-leaflet": "^5.0.0",
     "react-resizable-panels": "^4.6.5",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
@@ -77,6 +80,7 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "^2.20.0",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
@@ -90,6 +94,7 @@
     "nitro": "3.0.260603-beta",
     "playwright": "^1.63.0",
     "prettier": "^3.7.3",
+    "sharp": "^0.35.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"

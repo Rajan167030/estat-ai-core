@@ -24,6 +24,7 @@ import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
 import { Route as CallingAgentIndexRouteImport } from './routes/calling-agent.index'
 import { Route as CallingAgentCallIdRouteImport } from './routes/calling-agent.$callId'
+import { Route as CustomerDashboardRouteImport } from './routes/customer.dashboard'
 import { Route as LeadsIndexRouteImport } from './routes/leads.index'
 import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
 import { Route as PartnersIndexRouteImport } from './routes/partners.index'
@@ -106,6 +107,11 @@ const CallingAgentCallIdRoute = CallingAgentCallIdRouteImport.update({
   path: '/calling-agent/$callId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomerDashboardRoute = CustomerDashboardRouteImport.update({
+  id: '/customer/dashboard',
+  path: '/customer/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeadsIndexRoute = LeadsIndexRouteImport.update({
   id: '/leads/',
   path: '/leads/',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/rera': typeof ReraRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/calling-agent/$callId': typeof CallingAgentCallIdRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/partners/$partnerId': typeof PartnersPartnerIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/rera': typeof ReraRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/calling-agent/$callId': typeof CallingAgentCallIdRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/partners/$partnerId': typeof PartnersPartnerIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/rera': typeof ReraRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/calling-agent/$callId': typeof CallingAgentCallIdRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
   '/partners/$partnerId': typeof PartnersPartnerIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/rera'
     | '/bookings/$bookingId'
     | '/calling-agent/$callId'
+    | '/customer/dashboard'
     | '/leads/$leadId'
     | '/partners/$partnerId'
     | '/projects/$projectId'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/rera'
     | '/bookings/$bookingId'
     | '/calling-agent/$callId'
+    | '/customer/dashboard'
     | '/leads/$leadId'
     | '/partners/$partnerId'
     | '/projects/$projectId'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/rera'
     | '/bookings/$bookingId'
     | '/calling-agent/$callId'
+    | '/customer/dashboard'
     | '/leads/$leadId'
     | '/partners/$partnerId'
     | '/projects/$projectId'
@@ -293,6 +305,7 @@ export interface RootRouteChildren {
   ReraRoute: typeof ReraRoute
   BookingsBookingIdRoute: typeof BookingsBookingIdRoute
   CallingAgentCallIdRoute: typeof CallingAgentCallIdRoute
+  CustomerDashboardRoute: typeof CustomerDashboardRoute
   LeadsLeadIdRoute: typeof LeadsLeadIdRoute
   PartnersPartnerIdRoute: typeof PartnersPartnerIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallingAgentCallIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customer/dashboard': {
+      id: '/customer/dashboard'
+      path: '/customer/dashboard'
+      fullPath: '/customer/dashboard'
+      preLoaderRoute: typeof CustomerDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leads/': {
       id: '/leads/'
       path: '/leads'
@@ -469,6 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReraRoute: ReraRoute,
   BookingsBookingIdRoute: BookingsBookingIdRoute,
   CallingAgentCallIdRoute: CallingAgentCallIdRoute,
+  CustomerDashboardRoute: CustomerDashboardRoute,
   LeadsLeadIdRoute: LeadsLeadIdRoute,
   PartnersPartnerIdRoute: PartnersPartnerIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,

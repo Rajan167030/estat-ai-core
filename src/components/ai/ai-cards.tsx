@@ -21,7 +21,9 @@ export function AIPanel({
       <header className="flex items-center gap-2 border-b border-ai-border/70 px-4 py-2.5">
         <Sparkles className="size-4 text-ai" />
         <h2 className="text-xs font-semibold tracking-[0.08em] text-ai uppercase">{title}</h2>
-        {subtitle ? <span className="ml-auto text-xs text-muted-foreground">{subtitle}</span> : null}
+        {subtitle ? (
+          <span className="ml-auto text-xs text-muted-foreground">{subtitle}</span>
+        ) : null}
       </header>
       <div className="p-4">{children}</div>
     </section>
@@ -48,7 +50,8 @@ export function GovernanceNote({ requirement }: { requirement: string }) {
     <p className="mt-3 flex items-start gap-1.5 rounded-md border border-border bg-card px-2.5 py-2 text-xs text-muted-foreground">
       <ShieldCheck className="mt-px size-3.5 shrink-0 text-teal" />
       <span>
-        AI recommends · Human approves · System executes · Audit records — <b className="font-semibold text-foreground">{requirement}</b>
+        AI recommends · Human approves · System executes · Audit records —{" "}
+        <b className="font-semibold text-foreground">{requirement}</b>
       </span>
     </p>
   );
@@ -131,7 +134,9 @@ export function ApprovalCard({
     <article className="surface flex flex-col p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <span className="label-xs">{kind} · {id}</span>
+          <span className="label-xs">
+            {kind} · {id}
+          </span>
           <h3 className="mt-0.5 text-sm font-semibold">{title}</h3>
           <p className="text-xs text-muted-foreground">{entity}</p>
         </div>

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { extractDocumentFields } from "../documents/extract";
+import { extractDocumentFields } from "../server/documents/extract";
 import type { DocumentRecord } from "@/lib/mock/data";
 
 export const runDocumentExtraction = createServerFn({ method: "POST" })

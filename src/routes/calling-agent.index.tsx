@@ -36,6 +36,7 @@ import {
   type CallOutcome,
   type CallRecord,
   type CallStatus,
+  type CallingInsight,
 } from "@/lib/mock/calling";
 import { num, relativeDays } from "@/lib/format";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -50,10 +51,12 @@ import {
   Timer,
   UserCheck,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { runDemoCampaign } from "@/server/api/calling-agent";
+import { runDemoCampaign } from "@/api/calling-agent";
+import { runCallingIntelligence } from "@/api/insights";
 import type { CallResult } from "@/server/calling-agent/types";
 
 export const Route = createFileRoute("/calling-agent/")({
@@ -186,6 +189,8 @@ function CallingAgentPage() {
   const [autoDial, setAutoDial] = useState(true);
   const [demoCalls, setDemoCalls] = useState<CallRecord[]>([]);
   const [runningDemo, setRunningDemo] = useState(false);
+  const [liveInsights, setLiveInsights] = useState<CallingInsight[] | null>(null);
+  const [insightsLoading, setInsightsLoading] = useState(false);
 
   const filtered = useMemo(
     () =>
@@ -213,6 +218,19 @@ function CallingAgentPage() {
       toast.error(err instanceof Error ? err.message : "Demo campaign failed");
     } finally {
       setRunningDemo(false);
+    }
+  }
+
+  async function handleRefreshIntelligence() {
+    setInsightsLoading(true);
+    try {
+      const result = await runCallingIntelligence();
+      setLiveInsights(result);
+      toast.success("Calling intelligence regenerated with AI.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to generate calling intelligence");
+    } finally {
+      setInsightsLoading(false);
     }
   }
 
@@ -640,36 +658,53 @@ function CallingAgentPage() {
             </SectionCard>
           </TabsContent>
 
-          <TabsContent value="intelligence" className="mt-4 grid gap-4 lg:grid-cols-3">
-            {callingInsights.map((i) => (
-              <AIPanel key={i.title} title="Calling intelligence" subtitle="Voice model v2.1">
-                <h3 className="text-sm font-semibold">{i.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{i.prediction}</p>
-                <div className="mt-3">
-                  <ConfidenceBar value={i.confidence} />
-                </div>
-                <ul className="mt-3 space-y-1.5">
-                  {i.reasons.map((r) => (
-                    <li key={r} className="flex gap-2 text-xs">
-                      <Sparkles className="mt-0.5 size-3.5 shrink-0 text-ai" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-3 rounded-md border border-border bg-card px-3 py-2">
-                  <span className="label-xs">Recommended action</span>
-                  <p className="mt-0.5 text-sm font-medium">{i.action}</p>
-                </div>
-                <GovernanceNote requirement={i.approval} />
-                <Button
-                  size="sm"
-                  className="mt-3"
-                  onClick={() => toast.success("Approval request submitted for review.")}
-                >
-                  Request approval
-                </Button>
-              </AIPanel>
-            ))}
+          <TabsContent value="intelligence" className="mt-4 space-y-3">
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefreshIntelligence}
+                disabled={insightsLoading}
+              >
+                {insightsLoading ? (
+                  <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-1.5 size-3.5" />
+                )}
+                Refresh with AI
+              </Button>
+            </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {(liveInsights ?? callingInsights).map((i) => (
+                <AIPanel key={i.title} title="Calling intelligence" subtitle="Voice model v2.1">
+                  <h3 className="text-sm font-semibold">{i.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{i.prediction}</p>
+                  <div className="mt-3">
+                    <ConfidenceBar value={i.confidence} />
+                  </div>
+                  <ul className="mt-3 space-y-1.5">
+                    {i.reasons.map((r) => (
+                      <li key={r} className="flex gap-2 text-xs">
+                        <Sparkles className="mt-0.5 size-3.5 shrink-0 text-ai" />
+                        {r}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-3 rounded-md border border-border bg-card px-3 py-2">
+                    <span className="label-xs">Recommended action</span>
+                    <p className="mt-0.5 text-sm font-medium">{i.action}</p>
+                  </div>
+                  <GovernanceNote requirement={i.approval} />
+                  <Button
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => toast.success("Approval request submitted for review.")}
+                  >
+                    Request approval
+                  </Button>
+                </AIPanel>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </div>

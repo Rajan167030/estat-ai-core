@@ -86,7 +86,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Estatum" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Estatum ERP" },
+      // og:image must be an absolute URL for link-preview crawlers (WhatsApp,
+      // X, iMessage) to fetch it — update this if the Vercel domain changes.
+      { property: "og:image", content: "https://estat-ai-core.vercel.app/og-image.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Estatum ERP — AI-powered Real Estate Operating System",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://estat-ai-core.vercel.app/og-image.png" },
     ],
     links: [
       {
@@ -99,7 +110,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
 

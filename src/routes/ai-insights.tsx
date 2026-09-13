@@ -6,7 +6,7 @@ import { KpiCard, PageHeader, SectionCard, StatusBadge } from "@/components/comm
 import { AIInsightCard } from "@/components/ai/ai-cards";
 import { insights as mockInsights, type Insight } from "@/lib/mock/data";
 import { Sparkles, ShieldCheck, Activity, TrendingDown, Loader2, RefreshCw } from "lucide-react";
-import { runAllInsights } from "@/server/api/insights";
+import { runAllInsights } from "@/api/insights";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/ai-insights")({

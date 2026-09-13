@@ -18,7 +18,7 @@ import { documents as mockDocuments, projectName, type DocumentRecord } from "@/
 import { shortDate } from "@/lib/format";
 import { FileText, ShieldCheck, AlertTriangle, ScanLine, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { runDocumentExtraction } from "@/server/api/documents";
+import { runDocumentExtraction } from "@/api/documents";
 
 function fileToDataUri(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

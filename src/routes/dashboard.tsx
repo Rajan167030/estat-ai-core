@@ -1,10 +1,28 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import {
-  aiBrief, collectionsTrend, funnel, inventoryDistribution, revenueByProject, salesTrend, totals,
+  aiBrief,
+  collectionsTrend,
+  funnel,
+  inventoryDistribution,
+  revenueByProject,
+  salesTrend,
+  totals,
 } from "@/lib/mock/data";
 import { inr, num } from "@/lib/format";
 import { KpiCard, SectionCard } from "@/components/common/primitives";
@@ -12,16 +30,32 @@ import { GovernanceNote } from "@/components/ai/ai-cards";
 import { AppShell } from "@/components/layout/app-shell";
 import { cn } from "@/lib/utils";
 import {
-  ArrowRight, Building2, ChevronRight, IndianRupee, Percent, Sparkles, TrendingUp, Users, Wallet,
+  ArrowRight,
+  Building2,
+  ChevronRight,
+  IndianRupee,
+  Percent,
+  Sparkles,
+  TrendingUp,
+  Users,
+  Wallet,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — Estatum ERP" },
-      { name: "description", content: "AI business brief, revenue, collections, inventory and sales funnel for your real-estate portfolio." },
+      {
+        name: "description",
+        content:
+          "AI business brief, revenue, collections, inventory and sales funnel for your real-estate portfolio.",
+      },
       { property: "og:title", content: "Dashboard — Estatum ERP" },
-      { property: "og:description", content: "AI business brief, revenue, collections, inventory and sales funnel in one operational view." },
+      {
+        property: "og:description",
+        content:
+          "AI business brief, revenue, collections, inventory and sales funnel in one operational view.",
+      },
     ],
   }),
   component: DashboardPage,
@@ -34,7 +68,12 @@ const SEVERITY_DOT: Record<string, string> = {
   positive: "bg-teal",
 };
 
-const CHART_COLORS = ["var(--color-chart-1)", "var(--color-chart-3)", "var(--color-chart-4)", "var(--color-chart-2)"];
+const CHART_COLORS = [
+  "var(--color-chart-1)",
+  "var(--color-chart-3)",
+  "var(--color-chart-4)",
+  "var(--color-chart-2)",
+];
 
 const axis = { stroke: "var(--color-muted-foreground)", fontSize: 11 } as const;
 
@@ -66,7 +105,8 @@ function DashboardPage() {
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5">
-              <TrendingUp className="size-3.5 text-teal" /> Portfolio health <b className="text-foreground">Stable</b>
+              <TrendingUp className="size-3.5 text-teal" /> Portfolio health{" "}
+              <b className="text-foreground">Stable</b>
             </span>
           </div>
         </div>
@@ -75,7 +115,9 @@ function DashboardPage() {
         <section className="overflow-hidden rounded-lg border border-ai-border bg-ai-soft">
           <header className="flex flex-wrap items-center gap-2 border-b border-ai-border/70 px-4 py-3">
             <Sparkles className="size-4 text-ai" />
-            <h2 className="text-xs font-semibold tracking-[0.1em] text-ai uppercase">AI Business Brief</h2>
+            <h2 className="text-xs font-semibold tracking-[0.1em] text-ai uppercase">
+              AI Business Brief
+            </h2>
             <span className="text-xs text-muted-foreground">Generated 08:40 IST · Model v4.2</span>
             <span className="ml-auto text-sm font-semibold">
               14 high-priority actions require attention
@@ -83,12 +125,20 @@ function DashboardPage() {
           </header>
           <ul className="grid divide-y divide-ai-border/50 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-3">
             {aiBrief.map((item) => (
-              <li key={item.id} className="border-ai-border/50 sm:border-b lg:[&:nth-child(-n+3)]:border-b lg:[&:nth-child(n+4)]:border-b-0">
+              <li
+                key={item.id}
+                className="border-ai-border/50 sm:border-b lg:[&:nth-child(-n+3)]:border-b lg:[&:nth-child(n+4)]:border-b-0"
+              >
                 <Link
                   to={item.to}
                   className="group flex h-full items-start gap-3 px-4 py-3 transition-colors hover:bg-card/70"
                 >
-                  <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", SEVERITY_DOT[item.severity])} />
+                  <span
+                    className={cn(
+                      "mt-1.5 size-2 shrink-0 rounded-full",
+                      SEVERITY_DOT[item.severity],
+                    )}
+                  />
                   <span className="min-w-0">
                     <span className="block text-sm font-semibold">{item.headline}</span>
                     <span className="block text-xs text-muted-foreground">{item.detail}</span>
@@ -98,7 +148,10 @@ function DashboardPage() {
               </li>
             ))}
             <li className="flex items-center px-4 py-3">
-              <Link to="/ai-insights" className="inline-flex items-center gap-1.5 text-sm font-semibold text-ai">
+              <Link
+                to="/ai-insights"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-ai"
+              >
                 Open AI Insights Center <ArrowRight className="size-4" />
               </Link>
             </li>
@@ -110,33 +163,88 @@ function DashboardPage() {
 
         {/* KPIs */}
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-          <KpiCard label="Total Revenue" value={inr(totals.revenue)} change={11.8} icon={IndianRupee} accent />
-          <KpiCard label="Total Bookings" value={num(totals.bookings)} change={14.2} icon={Building2} />
+          <KpiCard
+            label="Total Revenue"
+            value={inr(totals.revenue)}
+            change={11.8}
+            icon={IndianRupee}
+            accent
+          />
+          <KpiCard
+            label="Total Bookings"
+            value={num(totals.bookings)}
+            change={14.2}
+            icon={Building2}
+          />
           <KpiCard label="Collections" value={inr(totals.collections)} change={6.4} icon={Wallet} />
-          <KpiCard label="Available Inventory" value={num(totals.available)} change={-4.1} hint="units vs last month" icon={Building2} />
+          <KpiCard
+            label="Available Inventory"
+            value={num(totals.available)}
+            change={-4.1}
+            hint="units vs last month"
+            icon={Building2}
+          />
           <KpiCard label="Active Leads" value={num(totals.leads)} change={9.3} icon={Users} />
-          <KpiCard label="Conversion Rate" value={`${totals.conversion}%`} change={0.6} icon={Percent} />
+          <KpiCard
+            label="Conversion Rate"
+            value={`${totals.conversion}%`}
+            change={0.6}
+            icon={Percent}
+          />
         </div>
 
         {/* Charts */}
         <div className="grid gap-4 xl:grid-cols-3">
-          <SectionCard title="Sales trend" description="Bookings and site visits over 12 months" className="xl:col-span-2" bodyClassName="pt-2">
+          <SectionCard
+            title="Sales trend"
+            description="Bookings and site visits over 12 months"
+            className="xl:col-span-2"
+            bodyClassName="pt-2"
+          >
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={salesTrend} margin={{ left: -18, right: 8, top: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
                 <XAxis dataKey="month" tickLine={false} axisLine={false} {...axis} />
                 <YAxis tickLine={false} axisLine={false} {...axis} />
                 {ChartTooltip()}
-                <Line type="monotone" dataKey="bookings" stroke="var(--color-chart-1)" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="siteVisits" stroke="var(--color-chart-2)" strokeWidth={2} dot={false} strokeDasharray="4 4" />
+                <Line
+                  type="monotone"
+                  dataKey="bookings"
+                  stroke="var(--color-chart-1)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="siteVisits"
+                  stroke="var(--color-chart-2)"
+                  strokeWidth={2}
+                  dot={false}
+                  strokeDasharray="4 4"
+                />
               </LineChart>
             </ResponsiveContainer>
           </SectionCard>
 
-          <SectionCard title="Inventory distribution" description={`${num(totals.units)} units across 12 projects`}>
+          <SectionCard
+            title="Inventory distribution"
+            description={`${num(totals.units)} units across 12 projects`}
+          >
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                <Pie data={inventoryDistribution} dataKey="value" nameKey="name" innerRadius={58} outerRadius={88} paddingAngle={2} stroke="var(--color-card)">
+                <Pie
+                  data={inventoryDistribution}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={58}
+                  outerRadius={88}
+                  paddingAngle={2}
+                  stroke="var(--color-card)"
+                >
                   {inventoryDistribution.map((_, i) => (
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                   ))}
@@ -147,7 +255,10 @@ function DashboardPage() {
             <ul className="mt-1 grid grid-cols-2 gap-1.5 text-xs">
               {inventoryDistribution.map((d, i) => (
                 <li key={d.name} className="flex items-center gap-1.5">
-                  <span className="size-2 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                  <span
+                    className="size-2 rounded-full"
+                    style={{ background: CHART_COLORS[i % CHART_COLORS.length] }}
+                  />
                   {d.name}
                   <span className="num ml-auto font-semibold">{num(d.value)}</span>
                 </li>
@@ -158,11 +269,27 @@ function DashboardPage() {
           <SectionCard title="Revenue by project" description="₹ crore, booked value">
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={revenueByProject} layout="vertical" margin={{ left: 40, right: 12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  horizontal={false}
+                />
                 <XAxis type="number" tickLine={false} axisLine={false} {...axis} />
-                <YAxis type="category" dataKey="name" width={90} tickLine={false} axisLine={false} {...axis} />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  width={90}
+                  tickLine={false}
+                  axisLine={false}
+                  {...axis}
+                />
                 {ChartTooltip()}
-                <Bar dataKey="revenue" fill="var(--color-chart-1)" radius={[0, 4, 4, 0]} barSize={14} />
+                <Bar
+                  dataKey="revenue"
+                  fill="var(--color-chart-1)"
+                  radius={[0, 4, 4, 0]}
+                  barSize={14}
+                />
               </BarChart>
             </ResponsiveContainer>
           </SectionCard>
@@ -176,12 +303,29 @@ function DashboardPage() {
                     <stop offset="100%" stopColor="var(--color-chart-1)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
                 <XAxis dataKey="month" tickLine={false} axisLine={false} {...axis} />
                 <YAxis tickLine={false} axisLine={false} {...axis} />
                 {ChartTooltip()}
-                <Area type="monotone" dataKey="expected" stroke="var(--color-muted-foreground)" fill="none" strokeDasharray="4 4" strokeWidth={1.5} />
-                <Area type="monotone" dataKey="received" stroke="var(--color-chart-1)" fill="url(#recv)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="expected"
+                  stroke="var(--color-muted-foreground)"
+                  fill="none"
+                  strokeDasharray="4 4"
+                  strokeWidth={1.5}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="received"
+                  stroke="var(--color-chart-1)"
+                  fill="url(#recv)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </SectionCard>

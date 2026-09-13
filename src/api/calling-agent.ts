@@ -2,11 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { leads, projectName } from "@/lib/mock/data";
 import { campaigns } from "@/lib/mock/calling";
-import { MockTelephonyProvider } from "../calling-agent/telephony/mock";
-import { resolveConversationEngine } from "../calling-agent/voice-ai/resolve";
-import { StubDndProvider } from "../calling-agent/compliance";
-import { runCampaignBatch } from "../calling-agent/campaign-runner";
-import type { LeadDialTarget } from "../calling-agent/types";
+import { MockTelephonyProvider } from "../server/calling-agent/telephony/mock";
+import { resolveConversationEngine } from "../server/calling-agent/voice-ai/resolve";
+import { StubDndProvider } from "../server/calling-agent/compliance";
+import { runCampaignBatch } from "../server/calling-agent/campaign-runner";
+import type { LeadDialTarget } from "../server/calling-agent/types";
 
 function toE164(phone: string): string {
   return phone.replace(/\s+/g, "");

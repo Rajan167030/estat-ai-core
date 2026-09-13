@@ -1,16 +1,40 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/app-shell";
-import { KpiCard, Meter, PageHeader, SectionCard, StatusBadge, DataTable, Td, Th, EmptyState } from "@/components/common/primitives";
-import { AIPanel, ConfidenceBar, GovernanceNote } from "@/components/ai/ai-cards";
+import {
+  KpiCard,
+  Meter,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+  DataTable,
+  Td,
+  Th,
+  EmptyState,
+} from "@/components/common/primitives";
+import { ProjectPricingPanel } from "@/components/ai/project-pricing-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
-  bookings, commissions, documents, partnerName, payments, possessionItems, projectById,
-  reraItems, units,
+  bookings,
+  commissions,
+  documents,
+  partnerName,
+  payments,
+  possessionItems,
+  projectById,
+  reraItems,
+  units,
 } from "@/lib/mock/data";
 import { inr, num, shortDate } from "@/lib/format";
-import { ArrowLeft, Building2, IndianRupee, KeyRound, Layers, TrendingUp, FileText } from "lucide-react";
-import { toast } from "sonner";
+import {
+  ArrowLeft,
+  Building2,
+  IndianRupee,
+  KeyRound,
+  Layers,
+  TrendingUp,
+  FileText,
+} from "lucide-react";
 
 export const Route = createFileRoute("/projects/$projectId")({
   loader: ({ params }) => {
@@ -20,7 +44,8 @@ export const Route = createFileRoute("/projects/$projectId")({
   },
   head: ({ loaderData }) => {
     const title = loaderData ? `${loaderData.project.name} — Estatum ERP` : "Project — Estatum ERP";
-    const description = "Project control room: inventory, sales, payments, channel partners, documents, RERA and possession.";
+    const description =
+      "Project control room: inventory, sales, payments, channel partners, documents, RERA and possession.";
     return {
       meta: [
         { title },
@@ -32,11 +57,29 @@ export const Route = createFileRoute("/projects/$projectId")({
     };
   },
   component: ProjectDetail,
-  errorComponent: () => <AppShell><p className="text-sm text-danger">Unable to load this project.</p></AppShell>,
-  notFoundComponent: () => <AppShell><p className="text-sm text-muted-foreground">Project not found.</p></AppShell>,
+  errorComponent: () => (
+    <AppShell>
+      <p className="text-sm text-danger">Unable to load this project.</p>
+    </AppShell>
+  ),
+  notFoundComponent: () => (
+    <AppShell>
+      <p className="text-sm text-muted-foreground">Project not found.</p>
+    </AppShell>
+  ),
 });
 
-const TABS = ["Overview", "Inventory", "Sales", "Payments", "Channel Partners", "Documents", "RERA", "Possession", "Analytics"];
+const TABS = [
+  "Overview",
+  "Inventory",
+  "Sales",
+  "Payments",
+  "Channel Partners",
+  "Documents",
+  "RERA",
+  "Possession",
+  "Analytics",
+];
 
 function ProjectDetail() {
   const { project } = Route.useLoaderData();
@@ -46,12 +89,17 @@ function ProjectDetail() {
   const projectDocs = documents.filter((d) => d.projectId === project.id);
   const projectRera = reraItems.filter((r) => r.projectId === project.id);
   const projectPossession = possessionItems.filter((p) => p.projectId === project.id);
-  const projectCommissions = commissions.filter((c) => projectBookings.some((b) => b.id === c.bookingId));
+  const projectCommissions = commissions.filter((c) =>
+    projectBookings.some((b) => b.id === c.bookingId),
+  );
 
   return (
     <AppShell>
       <div className="space-y-5">
-        <Link to="/projects" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          to="/projects"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft className="size-4" /> Back to projects
         </Link>
 
@@ -63,15 +111,35 @@ function ProjectDetail() {
 
         <Tabs defaultValue="Overview">
           <TabsList className="flex h-auto w-full flex-wrap justify-start">
-            {TABS.map((t) => <TabsTrigger key={t} value={t} className="text-xs">{t}</TabsTrigger>)}
+            {TABS.map((t) => (
+              <TabsTrigger key={t} value={t} className="text-xs">
+                {t}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <TabsContent value="Overview" className="mt-4 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <KpiCard label="Revenue booked" value={inr(project.revenue)} change={9.4} icon={IndianRupee} accent />
+              <KpiCard
+                label="Revenue booked"
+                value={inr(project.revenue)}
+                change={9.4}
+                icon={IndianRupee}
+                accent
+              />
               <KpiCard label="Units sold" value={num(project.sold)} change={6.1} icon={Building2} />
-              <KpiCard label="Available" value={num(project.available)} change={-3.2} icon={Layers} />
-              <KpiCard label="Sales velocity" value={`${project.velocity} / mo`} change={4.8} icon={TrendingUp} />
+              <KpiCard
+                label="Available"
+                value={num(project.available)}
+                change={-3.2}
+                icon={Layers}
+              />
+              <KpiCard
+                label="Sales velocity"
+                value={`${project.velocity} / mo`}
+                change={4.8}
+                icon={TrendingUp}
+              />
             </div>
             <div className="grid gap-4 lg:grid-cols-3">
               <SectionCard title="Collection progress" className="lg:col-span-2">
@@ -79,44 +147,41 @@ function ProjectDetail() {
                   <span className="num text-2xl font-semibold">{project.collectionPct}%</span>
                   <span className="text-xs text-muted-foreground">of demanded value collected</span>
                 </div>
-                <div className="mt-2"><Meter value={project.collectionPct} /></div>
+                <div className="mt-2">
+                  <Meter value={project.collectionPct} />
+                </div>
                 <div className="mt-4 flex items-baseline justify-between">
                   <span className="num text-2xl font-semibold">{project.construction}%</span>
-                  <span className="text-xs text-muted-foreground">construction complete · possession {shortDate(project.possession)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    construction complete · possession {shortDate(project.possession)}
+                  </span>
                 </div>
-                <div className="mt-2"><Meter value={project.construction} tone="teal" /></div>
+                <div className="mt-2">
+                  <Meter value={project.construction} tone="teal" />
+                </div>
               </SectionCard>
-              <AIPanel title="Pricing Intelligence">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-md border border-border bg-card px-3 py-2">
-                    <p className="label-xs">Current</p>
-                    <p className="num text-sm font-semibold">₹{num(project.ratePerSqft)}/sq.ft</p>
-                  </div>
-                  <div className="rounded-md border border-ai-border bg-card px-3 py-2">
-                    <p className="label-xs text-ai">Recommended</p>
-                    <p className="num text-sm font-semibold text-ai">₹{num(Math.round(project.ratePerSqft * 1.04))}/sq.ft</p>
-                  </div>
-                </div>
-                <div className="mt-3"><ConfidenceBar value={82} /></div>
-                <p className="mt-3 text-xs text-muted-foreground">Demand ↑ 18% · Inventory ↓ 12% over 30 days</p>
-                <GovernanceNote requirement="Requires Sales Manager approval" />
-                <Button size="sm" className="mt-3 w-full" onClick={() => toast.success("Price approval submitted.")}>
-                  Request approval
-                </Button>
-              </AIPanel>
+              <ProjectPricingPanel project={project} />
             </div>
           </TabsContent>
 
           <TabsContent value="Inventory" className="mt-4">
-            <SectionCard title="Unit inventory" description={`${projectUnits.length} units`} action={
-              <Button asChild size="sm" variant="outline"><Link to="/inventory">Open inventory grid</Link></Button>
-            }>
+            <SectionCard
+              title="Unit inventory"
+              description={`${projectUnits.length} units`}
+              action={
+                <Button asChild size="sm" variant="outline">
+                  <Link to="/inventory">Open inventory grid</Link>
+                </Button>
+              }
+            >
               <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-10">
                 {projectUnits.slice(0, 60).map((u) => (
                   <div key={u.id} className="rounded-md border border-border p-1.5 text-center">
                     <p className="text-[11px] font-semibold">{u.code}</p>
                     <p className="num text-[10px] text-muted-foreground">{inr(u.price)}</p>
-                    <p className="mt-1 truncate text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">{u.status}</p>
+                    <p className="mt-1 truncate text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
+                      {u.status}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -124,7 +189,18 @@ function ProjectDetail() {
           </TabsContent>
 
           <TabsContent value="Sales" className="mt-4">
-            <DataTable head={<><Th>Booking</Th><Th>Customer</Th><Th>Unit</Th><Th>Amount</Th><Th>Executive</Th><Th>Status</Th></>}>
+            <DataTable
+              head={
+                <>
+                  <Th>Booking</Th>
+                  <Th>Customer</Th>
+                  <Th>Unit</Th>
+                  <Th>Amount</Th>
+                  <Th>Executive</Th>
+                  <Th>Status</Th>
+                </>
+              }
+            >
               {projectBookings.slice(0, 20).map((b) => (
                 <tr key={b.id} className="hover:bg-muted/50">
                   <Td className="font-medium">{b.id}</Td>
@@ -132,14 +208,27 @@ function ProjectDetail() {
                   <Td>{units.find((u) => u.id === b.unitId)?.code}</Td>
                   <Td className="num">{inr(b.amount)}</Td>
                   <Td className="text-muted-foreground">{b.executive}</Td>
-                  <Td><StatusBadge status={b.status} /></Td>
+                  <Td>
+                    <StatusBadge status={b.status} />
+                  </Td>
                 </tr>
               ))}
             </DataTable>
           </TabsContent>
 
           <TabsContent value="Payments" className="mt-4">
-            <DataTable head={<><Th>Customer</Th><Th>Milestone</Th><Th>Due</Th><Th>Paid</Th><Th>Outstanding</Th><Th>Status</Th></>}>
+            <DataTable
+              head={
+                <>
+                  <Th>Customer</Th>
+                  <Th>Milestone</Th>
+                  <Th>Due</Th>
+                  <Th>Paid</Th>
+                  <Th>Outstanding</Th>
+                  <Th>Status</Th>
+                </>
+              }
+            >
               {projectPayments.slice(0, 20).map((p) => (
                 <tr key={p.id} className="hover:bg-muted/50">
                   <Td>{p.customer}</Td>
@@ -147,14 +236,27 @@ function ProjectDetail() {
                   <Td className="num">{inr(p.due)}</Td>
                   <Td className="num">{inr(p.paid)}</Td>
                   <Td className="num">{inr(p.due - p.paid)}</Td>
-                  <Td><StatusBadge status={p.status} /></Td>
+                  <Td>
+                    <StatusBadge status={p.status} />
+                  </Td>
                 </tr>
               ))}
             </DataTable>
           </TabsContent>
 
           <TabsContent value="Channel Partners" className="mt-4">
-            <DataTable head={<><Th>Partner</Th><Th>Booking</Th><Th>Unit</Th><Th>Rate</Th><Th>Commission</Th><Th>Status</Th></>}>
+            <DataTable
+              head={
+                <>
+                  <Th>Partner</Th>
+                  <Th>Booking</Th>
+                  <Th>Unit</Th>
+                  <Th>Rate</Th>
+                  <Th>Commission</Th>
+                  <Th>Status</Th>
+                </>
+              }
+            >
               {projectCommissions.slice(0, 20).map((c) => (
                 <tr key={c.id} className="hover:bg-muted/50">
                   <Td className="font-medium">{partnerName(c.partnerId)}</Td>
@@ -162,7 +264,9 @@ function ProjectDetail() {
                   <Td>{c.unitCode}</Td>
                   <Td className="num">{c.ratePct}%</Td>
                   <Td className="num">{inr(c.amount)}</Td>
-                  <Td><StatusBadge status={c.status} /></Td>
+                  <Td>
+                    <StatusBadge status={c.status} />
+                  </Td>
                 </tr>
               ))}
             </DataTable>
@@ -170,16 +274,32 @@ function ProjectDetail() {
 
           <TabsContent value="Documents" className="mt-4">
             {projectDocs.length === 0 ? (
-              <EmptyState icon={FileText} title="No documents uploaded" description="Customer KYC and agreements for this project will appear here once uploaded." />
+              <EmptyState
+                icon={FileText}
+                title="No documents uploaded"
+                description="Customer KYC and agreements for this project will appear here once uploaded."
+              />
             ) : (
-              <DataTable head={<><Th>Type</Th><Th>Customer</Th><Th>Uploaded</Th><Th>AI confidence</Th><Th>Status</Th></>}>
+              <DataTable
+                head={
+                  <>
+                    <Th>Type</Th>
+                    <Th>Customer</Th>
+                    <Th>Uploaded</Th>
+                    <Th>AI confidence</Th>
+                    <Th>Status</Th>
+                  </>
+                }
+              >
                 {projectDocs.map((d) => (
                   <tr key={d.id} className="hover:bg-muted/50">
                     <Td className="font-medium">{d.type}</Td>
                     <Td>{d.customer}</Td>
                     <Td className="text-muted-foreground">{shortDate(d.uploaded)}</Td>
                     <Td className="num">{d.confidence}%</Td>
-                    <Td><StatusBadge status={d.verification} /></Td>
+                    <Td>
+                      <StatusBadge status={d.verification} />
+                    </Td>
                   </tr>
                 ))}
               </DataTable>
@@ -187,15 +307,30 @@ function ProjectDetail() {
           </TabsContent>
 
           <TabsContent value="RERA" className="mt-4">
-            <DataTable head={<><Th>Task</Th><Th>Authority</Th><Th>Due</Th><Th>Severity</Th><Th>Penalty exposure</Th><Th>Status</Th></>}>
+            <DataTable
+              head={
+                <>
+                  <Th>Task</Th>
+                  <Th>Authority</Th>
+                  <Th>Due</Th>
+                  <Th>Severity</Th>
+                  <Th>Penalty exposure</Th>
+                  <Th>Status</Th>
+                </>
+              }
+            >
               {projectRera.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/50">
                   <Td className="font-medium">{r.task}</Td>
                   <Td className="text-muted-foreground">{r.authority}</Td>
                   <Td>{shortDate(r.due)}</Td>
-                  <Td><StatusBadge status={r.severity} /></Td>
+                  <Td>
+                    <StatusBadge status={r.severity} />
+                  </Td>
                   <Td className="num">{inr(r.penalty)}</Td>
-                  <Td><StatusBadge status={r.status} /></Td>
+                  <Td>
+                    <StatusBadge status={r.status} />
+                  </Td>
                 </tr>
               ))}
             </DataTable>
@@ -203,15 +338,25 @@ function ProjectDetail() {
 
           <TabsContent value="Possession" className="mt-4">
             {projectPossession.length === 0 ? (
-              <EmptyState icon={KeyRound} title="No units in possession pipeline" description="Units enter this pipeline once construction crosses 90% and final payment is demanded." />
+              <EmptyState
+                icon={KeyRound}
+                title="No units in possession pipeline"
+                description="Units enter this pipeline once construction crosses 90% and final payment is demanded."
+              />
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {projectPossession.map((p) => (
                   <div key={p.id} className="surface p-4">
                     <p className="text-sm font-semibold">{p.customer}</p>
-                    <p className="text-xs text-muted-foreground">Unit {p.unitCode} · {p.stage}</p>
-                    <div className="mt-3"><Meter value={p.completion} tone="teal" /></div>
-                    <p className="mt-1 text-xs text-muted-foreground">{p.completion}% complete · handover {shortDate(p.handoverDate)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Unit {p.unitCode} · {p.stage}
+                    </p>
+                    <div className="mt-3">
+                      <Meter value={p.completion} tone="teal" />
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {p.completion}% complete · handover {shortDate(p.handoverDate)}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -220,10 +365,18 @@ function ProjectDetail() {
 
           <TabsContent value="Analytics" className="mt-4">
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <KpiCard label="Avg realisation" value={`₹${num(project.ratePerSqft)}/sq.ft`} change={3.1} />
+              <KpiCard
+                label="Avg realisation"
+                value={`₹${num(project.ratePerSqft)}/sq.ft`}
+                change={3.1}
+              />
               <KpiCard label="Discount leakage" value="1.6%" change={-0.4} />
               <KpiCard label="Site visit → booking" value="19.4%" change={2.2} />
-              <KpiCard label="Collection efficiency" value={`${project.collectionPct}%`} change={1.9} />
+              <KpiCard
+                label="Collection efficiency"
+                value={`${project.collectionPct}%`}
+                change={1.9}
+              />
             </div>
           </TabsContent>
         </Tabs>

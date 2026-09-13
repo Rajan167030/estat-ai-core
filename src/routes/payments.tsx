@@ -2,24 +2,54 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import {
-  DataTable, EmptyState, KpiCard, PageHeader, SectionCard, StatusBadge, Td, Th,
+  DataTable,
+  EmptyState,
+  KpiCard,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+  Td,
+  Th,
 } from "@/components/common/primitives";
 import { AIPanel, ConfidenceBar, GovernanceNote } from "@/components/ai/ai-cards";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { payments, projectName, projects } from "@/lib/mock/data";
 import { inr, shortDate } from "@/lib/format";
-import { Wallet, AlertTriangle, CalendarClock, TrendingDown, PhoneCall } from "lucide-react";
+import {
+  Wallet,
+  AlertTriangle,
+  CalendarClock,
+  TrendingDown,
+  PhoneCall,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
+import { runPaymentRiskInsight } from "@/api/insights";
+import type { ReasonedRecommendation } from "@/server/insights/per-item";
 
 export const Route = createFileRoute("/payments")({
   head: () => ({
     meta: [
       { title: "Payments & Collections — Estatum ERP" },
-      { name: "description", content: "Collections dashboard: what is collected, due this week, overdue, and which customers carry the highest delay risk." },
+      {
+        name: "description",
+        content:
+          "Collections dashboard: what is collected, due this week, overdue, and which customers carry the highest delay risk.",
+      },
       { property: "og:title", content: "Payments & Collections — Estatum ERP" },
-      { property: "og:description", content: "Milestone collections, outstanding demands and AI collection-risk scoring." },
+      {
+        property: "og:description",
+        content: "Milestone collections, outstanding demands and AI collection-risk scoring.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -31,6 +61,8 @@ function PaymentsPage() {
   const [q, setQ] = useState("");
   const [project, setProject] = useState("all");
   const [status, setStatus] = useState("all");
+  const [aiResult, setAiResult] = useState<ReasonedRecommendation | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const collected = payments.reduce((s, p) => s + p.paid, 0);
   const outstanding = payments.reduce((s, p) => s + Math.max(0, p.due - p.paid), 0);
@@ -42,71 +74,149 @@ function PaymentsPage() {
 
   const rows = useMemo(
     () =>
-      payments.filter((p) => {
-        if (q && !`${p.customer} ${p.unitCode}`.toLowerCase().includes(q.toLowerCase())) return false;
-        if (project !== "all" && p.projectId !== project) return false;
-        if (status !== "all" && p.status !== status) return false;
-        return true;
-      }).slice(0, 120),
+      payments
+        .filter((p) => {
+          if (q && !`${p.customer} ${p.unitCode}`.toLowerCase().includes(q.toLowerCase()))
+            return false;
+          if (project !== "all" && p.projectId !== project) return false;
+          if (status !== "all" && p.status !== status) return false;
+          return true;
+        })
+        .slice(0, 120),
     [q, project, status],
   );
 
   const top = highRisk[0];
 
+  async function handleRegenerate() {
+    if (!top) return;
+    setAiLoading(true);
+    try {
+      const result = await runPaymentRiskInsight({ data: { paymentId: top.id } });
+      setAiResult(result);
+      toast.success("Collection-risk insight regenerated with AI.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to generate collection-risk insight",
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
   return (
     <AppShell>
-      <PageHeader title="Payments" subtitle="Milestone collections, outstanding demands and delay risk" />
+      <PageHeader
+        title="Payments"
+        subtitle="Milestone collections, outstanding demands and delay risk"
+      />
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard label="Total collected" value={inr(collected)} icon={Wallet} accent />
-        <KpiCard label="Due this week" value={inr(dueSoon.reduce((s, p) => s + (p.due - p.paid), 0))} icon={CalendarClock} />
-        <KpiCard label="Overdue" value={inr(overdue.reduce((s, p) => s + (p.due - p.paid), 0))} hint={`${overdue.length} demands`} icon={AlertTriangle} />
-        <KpiCard label="High risk" value={String(highRisk.length)} hint="predicted delay" icon={TrendingDown} />
+        <KpiCard
+          label="Due this week"
+          value={inr(dueSoon.reduce((s, p) => s + (p.due - p.paid), 0))}
+          icon={CalendarClock}
+        />
+        <KpiCard
+          label="Overdue"
+          value={inr(overdue.reduce((s, p) => s + (p.due - p.paid), 0))}
+          hint={`${overdue.length} demands`}
+          icon={AlertTriangle}
+        />
+        <KpiCard
+          label="High risk"
+          value={String(highRisk.length)}
+          hint="predicted delay"
+          icon={TrendingDown}
+        />
         <KpiCard label="Outstanding" value={inr(outstanding)} icon={Wallet} />
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
-        <SectionCard title="Collection risk" description="Highest predicted delay, ranked by AI" className="lg:col-span-1">
+        <SectionCard
+          title="Collection risk"
+          description="Highest predicted delay, ranked by AI"
+          className="lg:col-span-1"
+        >
           {top ? (
             <AIPanel title="Collection risk" subtitle={top.unitCode}>
               <p className="text-sm font-semibold">{top.customer}</p>
               <p className="text-xs text-muted-foreground">
-                {projectName(top.projectId)} · {top.milestone} · {inr(top.due - top.paid)} outstanding
+                {projectName(top.projectId)} · {top.milestone} · {inr(top.due - top.paid)}{" "}
+                outstanding
               </p>
               <div className="mt-3">
                 <ConfidenceBar value={top.delayProbability} label="Delay probability" />
               </div>
               <ul className="mt-3 list-disc space-y-1 pl-4 text-xs text-muted-foreground">
-                <li>Two previous milestones paid after the due date.</li>
-                <li>Home-loan disbursement pending with the bank.</li>
-                <li>No response to the last two collection reminders.</li>
+                {(
+                  aiResult?.reasons ?? [
+                    "Two previous milestones paid after the due date.",
+                    "Home-loan disbursement pending with the bank.",
+                    "No response to the last two collection reminders.",
+                  ]
+                ).map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
               </ul>
-              <Button
-                size="sm"
-                className="mt-3 w-full"
-                onClick={() => toast.success(`Collection call scheduled with ${top.customer}.`)}
-              >
-                <PhoneCall className="size-4" /> Schedule collection call
-              </Button>
+              {aiResult ? (
+                <p className="mt-3 rounded-md border border-border bg-card px-3 py-2 text-xs font-medium">
+                  {aiResult.action}
+                </p>
+              ) : null}
+              <div className="mt-3 flex gap-2">
+                <Button size="sm" variant="outline" onClick={handleRegenerate} disabled={aiLoading}>
+                  {aiLoading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="size-4" />
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => toast.success(`Collection call scheduled with ${top.customer}.`)}
+                >
+                  <PhoneCall className="size-4" /> Schedule collection call
+                </Button>
+              </div>
               <GovernanceNote requirement="Any waiver or reschedule needs Finance Head approval" />
             </AIPanel>
           ) : (
-            <EmptyState icon={Wallet} title="No high-risk collections" description="Every customer is currently tracking on schedule." />
+            <EmptyState
+              icon={Wallet}
+              title="No high-risk collections"
+              description="Every customer is currently tracking on schedule."
+            />
           )}
         </SectionCard>
 
         <div className="lg:col-span-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search customer or unit" className="h-9 w-full sm:w-64" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search customer or unit"
+              className="h-9 w-full sm:w-64"
+            />
             <Select value={project} onValueChange={setProject}>
-              <SelectTrigger className="h-9 w-48"><SelectValue placeholder="Project" /></SelectTrigger>
+              <SelectTrigger className="h-9 w-48">
+                <SelectValue placeholder="Project" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All projects</SelectItem>
-                {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                {projects.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="h-9 w-36"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger className="h-9 w-36">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Paid">Paid</SelectItem>
@@ -126,7 +236,18 @@ function PaymentsPage() {
               />
             ) : (
               <DataTable
-                head={<><Th>Customer</Th><Th>Unit</Th><Th className="text-right">Due</Th><Th>Due date</Th><Th className="text-right">Paid</Th><Th className="text-right">Outstanding</Th><Th>Risk</Th><Th>Status</Th></>}
+                head={
+                  <>
+                    <Th>Customer</Th>
+                    <Th>Unit</Th>
+                    <Th className="text-right">Due</Th>
+                    <Th>Due date</Th>
+                    <Th className="text-right">Paid</Th>
+                    <Th className="text-right">Outstanding</Th>
+                    <Th>Risk</Th>
+                    <Th>Status</Th>
+                  </>
+                }
               >
                 {rows.map((p) => (
                   <tr key={p.id} className="hover:bg-muted/50">
@@ -135,9 +256,15 @@ function PaymentsPage() {
                     <Td className="num text-right">{inr(p.due)}</Td>
                     <Td className="text-muted-foreground">{shortDate(p.dueDate)}</Td>
                     <Td className="num text-right">{inr(p.paid)}</Td>
-                    <Td className="num text-right font-semibold">{inr(Math.max(0, p.due - p.paid))}</Td>
-                    <Td><StatusBadge status={p.risk} /></Td>
-                    <Td><StatusBadge status={p.status} /></Td>
+                    <Td className="num text-right font-semibold">
+                      {inr(Math.max(0, p.due - p.paid))}
+                    </Td>
+                    <Td>
+                      <StatusBadge status={p.risk} />
+                    </Td>
+                    <Td>
+                      <StatusBadge status={p.status} />
+                    </Td>
                   </tr>
                 ))}
               </DataTable>

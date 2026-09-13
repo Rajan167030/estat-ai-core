@@ -12,9 +12,17 @@ export const Route = createFileRoute("/approvals")({
   head: () => ({
     meta: [
       { title: "Approvals — Estatum ERP" },
-      { name: "description", content: "Review pricing, discount, commission and RERA requests. Every change records who asked, who approved and why." },
+      {
+        name: "description",
+        content:
+          "Review pricing, discount, commission and RERA requests. Every change records who asked, who approved and why.",
+      },
       { property: "og:title", content: "Approvals — Estatum ERP" },
-      { property: "og:description", content: "Pending pricing, discount, commission and compliance approvals with full audit context." },
+      {
+        property: "og:description",
+        content:
+          "Pending pricing, discount, commission and compliance approvals with full audit context.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -41,16 +49,37 @@ function ApprovalsPage() {
       />
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Pending approvals" value={String(approvals.length)} icon={ShieldCheck} accent />
-        <KpiCard label="Raised by AI" value={String(aiRequested)} hint="never auto-applied" icon={Sparkles} />
-        <KpiCard label="Commission requests" value={String(approvals.filter((a) => a.kind === "Commission").length)} icon={Percent} />
-        <KpiCard label="Financial impact" value={inr(financialImpact)} hint="absolute value under review" icon={ScrollText} />
+        <KpiCard
+          label="Pending approvals"
+          value={String(approvals.length)}
+          icon={ShieldCheck}
+          accent
+        />
+        <KpiCard
+          label="Raised by AI"
+          value={String(aiRequested)}
+          hint="never auto-applied"
+          icon={Sparkles}
+        />
+        <KpiCard
+          label="Commission requests"
+          value={String(approvals.filter((a) => a.kind === "Commission").length)}
+          icon={Percent}
+        />
+        <KpiCard
+          label="Financial impact"
+          value={inr(financialImpact)}
+          hint="absolute value under review"
+          icon={ScrollText}
+        />
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-6">
         <TabsList>
           {TABS.map((t) => (
-            <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+            <TabsTrigger key={t} value={t}>
+              {t}
+            </TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value={tab} className="mt-4">

@@ -38,15 +38,37 @@ const toneClass: Record<Tone, string> = {
 };
 
 const STATUS_TONES: Record<string, Tone> = {
-  Hot: "red", Warm: "amber", Cold: "neutral", Converted: "green", Lost: "neutral",
-  Available: "green", Hold: "amber", Booked: "blue", Sold: "neutral", "Possession Ready": "teal",
-  Confirmed: "green", Pending: "amber", Cancelled: "neutral",
-  Paid: "green", Partial: "amber", Due: "blue", Overdue: "red",
-  Low: "green", Medium: "amber", High: "red",
-  Verified: "green", "Needs Review": "amber", Rejected: "red",
-  "Pending Approval": "amber", Payable: "blue", Disputed: "red",
-  Platinum: "ai", Gold: "amber", Silver: "neutral",
-  Upcoming: "blue", Completed: "green",
+  Hot: "red",
+  Warm: "amber",
+  Cold: "neutral",
+  Converted: "green",
+  Lost: "neutral",
+  Available: "green",
+  Hold: "amber",
+  Booked: "blue",
+  Sold: "neutral",
+  "Possession Ready": "teal",
+  Confirmed: "green",
+  Pending: "amber",
+  Cancelled: "neutral",
+  Paid: "green",
+  Partial: "amber",
+  Due: "blue",
+  Overdue: "red",
+  Low: "green",
+  Medium: "amber",
+  High: "red",
+  Verified: "green",
+  "Needs Review": "amber",
+  Rejected: "red",
+  "Pending Approval": "amber",
+  Payable: "blue",
+  Disputed: "red",
+  Platinum: "ai",
+  Gold: "amber",
+  Silver: "neutral",
+  Upcoming: "blue",
+  Completed: "green",
 };
 
 export function StatusBadge({ status, tone }: { status: string; tone?: Tone }) {
@@ -92,7 +114,12 @@ export function KpiCard({
       <div className="num mt-2 text-[26px] leading-8 font-semibold">{value}</div>
       <div className="mt-1 flex items-center gap-2 text-xs">
         {change !== undefined ? (
-          <span className={cn("inline-flex items-center gap-0.5 font-semibold", up ? "text-success" : "text-danger")}>
+          <span
+            className={cn(
+              "inline-flex items-center gap-0.5 font-semibold",
+              up ? "text-success" : "text-danger",
+            )}
+          >
             {up ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
             {Math.abs(change).toFixed(1)}%
           </span>
@@ -229,12 +256,20 @@ export function DataTable({ head, children }: { head: ReactNode; children: React
 /* ---------- Progress bar ---------- */
 export function Meter({ value, tone = "blue" }: { value: number; tone?: Tone }) {
   const fill: Record<Tone, string> = {
-    neutral: "bg-muted-foreground", blue: "bg-primary", green: "bg-success",
-    amber: "bg-warning", red: "bg-danger", teal: "bg-teal", ai: "bg-ai",
+    neutral: "bg-muted-foreground",
+    blue: "bg-primary",
+    green: "bg-success",
+    amber: "bg-warning",
+    red: "bg-danger",
+    teal: "bg-teal",
+    ai: "bg-ai",
   };
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-      <div className={cn("h-full rounded-full", fill[tone])} style={{ width: `${Math.min(100, value)}%` }} />
+      <div
+        className={cn("h-full rounded-full", fill[tone])}
+        style={{ width: `${Math.min(100, value)}%` }}
+      />
     </div>
   );
 }

@@ -6,25 +6,63 @@ import { SearchCommand } from "@/components/layout/search-command";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
-  Popover, PopoverContent, PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Bell, Menu, Search, ShieldCheck, LogOut, Settings, Building, ChevronDown, AlertTriangle,
-  CalendarClock, Wallet, Sparkles, ScrollText,
+  Bell,
+  Menu,
+  Search,
+  ShieldCheck,
+  LogOut,
+  Settings,
+  Building,
+  ChevronDown,
+  AlertTriangle,
+  CalendarClock,
+  Wallet,
+  Sparkles,
+  ScrollText,
 } from "lucide-react";
 import { approvals } from "@/lib/mock/data";
 import { toast } from "sonner";
 
 const NOTIFICATIONS = [
-  { icon: Wallet, title: "₹15L payment overdue", meta: "Rahul Sharma · Unit A-1204", tone: "text-danger" },
-  { icon: CalendarClock, title: "9 follow-ups due today", meta: "Assigned across 4 executives", tone: "text-warning" },
-  { icon: ShieldCheck, title: "Commission approval pending", meta: "Rajan Properties · ₹1.6L", tone: "text-primary" },
-  { icon: ScrollText, title: "RERA filing in 8 days", meta: "Sereno Greens · penalty ₹5L", tone: "text-warning" },
-  { icon: Sparkles, title: "Pricing engine flagged Tower B", meta: "Demand up 23% · approval required", tone: "text-ai" },
+  {
+    icon: Wallet,
+    title: "₹15L payment overdue",
+    meta: "Rahul Sharma · Unit A-1204",
+    tone: "text-danger",
+  },
+  {
+    icon: CalendarClock,
+    title: "9 follow-ups due today",
+    meta: "Assigned across 4 executives",
+    tone: "text-warning",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Commission approval pending",
+    meta: "Rajan Properties · ₹1.6L",
+    tone: "text-primary",
+  },
+  {
+    icon: ScrollText,
+    title: "RERA filing in 8 days",
+    meta: "Sereno Greens · penalty ₹5L",
+    tone: "text-warning",
+  },
+  {
+    icon: Sparkles,
+    title: "Pricing engine flagged Tower B",
+    meta: "Demand up 23% · approval required",
+    tone: "text-ai",
+  },
 ];
 
 function Brand() {
@@ -145,7 +183,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-80 p-0">
-                <div className="border-b border-border px-3 py-2 text-sm font-semibold">Notifications</div>
+                <div className="border-b border-border px-3 py-2 text-sm font-semibold">
+                  Notifications
+                </div>
                 <ul className="divide-y divide-border">
                   {NOTIFICATIONS.map((n) => (
                     <li key={n.title} className="flex gap-2.5 px-3 py-2.5">
@@ -176,7 +216,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <p className="text-sm font-medium">Rajan Kulkarni</p>
-                  <p className="text-xs font-normal text-muted-foreground">Director · Estatum Developers</p>
+                  <p className="text-xs font-normal text-muted-foreground">
+                    Director · Estatum Developers
+                  </p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => toast("Settings coming soon.")}>

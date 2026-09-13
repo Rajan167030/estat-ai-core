@@ -1,10 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { EmptyState, KpiCard, PageHeader, SectionCard, StatusBadge } from "@/components/common/primitives";
-import { AIPanel, ConfidenceBar, GovernanceNote } from "@/components/ai/ai-cards";
+import {
+  EmptyState,
+  KpiCard,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+} from "@/components/common/primitives";
+import { ProjectPricingPanel } from "@/components/ai/project-pricing-panel";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { projects, units, type Unit, type UnitStatus } from "@/lib/mock/data";
 import { inr, inrFull, num } from "@/lib/format";
@@ -16,9 +28,16 @@ export const Route = createFileRoute("/inventory")({
   head: () => ({
     meta: [
       { title: "Inventory — Estatum ERP" },
-      { name: "description", content: "Visual unit inventory by tower and floor with live pricing, status and AI pricing recommendations." },
+      {
+        name: "description",
+        content:
+          "Visual unit inventory by tower and floor with live pricing, status and AI pricing recommendations.",
+      },
       { property: "og:title", content: "Inventory — Estatum ERP" },
-      { property: "og:description", content: "Tower-and-floor unit grid with live status, pricing and AI pricing intelligence." },
+      {
+        property: "og:description",
+        content: "Tower-and-floor unit grid with live status, pricing and AI pricing intelligence.",
+      },
     ],
   }),
   component: InventoryPage,
@@ -66,46 +85,102 @@ function InventoryPage() {
   return (
     <AppShell>
       <div className="space-y-5">
-        <PageHeader title="Inventory" subtitle={`${project.name} · ${num(filtered.length)} units in view`} />
+        <PageHeader
+          title="Inventory"
+          subtitle={`${project.name} · ${num(filtered.length)} units in view`}
+        />
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard label="Available" value={num(filtered.filter((u) => u.status === "Available").length)} icon={Layers} accent />
-          <KpiCard label="On hold" value={num(filtered.filter((u) => u.status === "Hold").length)} icon={Grid3x3} />
-          <KpiCard label="Booked + sold" value={num(filtered.filter((u) => u.status === "Booked" || u.status === "Sold").length)} icon={Grid3x3} />
-          <KpiCard label="Avg rate" value={`₹${num(project.ratePerSqft)}/sq.ft`} change={3.1} icon={TrendingUp} />
+          <KpiCard
+            label="Available"
+            value={num(filtered.filter((u) => u.status === "Available").length)}
+            icon={Layers}
+            accent
+          />
+          <KpiCard
+            label="On hold"
+            value={num(filtered.filter((u) => u.status === "Hold").length)}
+            icon={Grid3x3}
+          />
+          <KpiCard
+            label="Booked + sold"
+            value={num(filtered.filter((u) => u.status === "Booked" || u.status === "Sold").length)}
+            icon={Grid3x3}
+          />
+          <KpiCard
+            label="Avg rate"
+            value={`₹${num(project.ratePerSqft)}/sq.ft`}
+            change={3.1}
+            icon={TrendingUp}
+          />
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-4">
             <div className="surface flex flex-wrap items-center gap-2 p-3">
-              <Select value={projectId} onValueChange={(v) => { setProjectId(v); setTower("all"); }}>
-                <SelectTrigger className="h-9 w-[200px]"><SelectValue /></SelectTrigger>
-                <SelectContent>{projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
+              <Select
+                value={projectId}
+                onValueChange={(v) => {
+                  setProjectId(v);
+                  setTower("all");
+                }}
+              >
+                <SelectTrigger className="h-9 w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
               <Select value={tower} onValueChange={setTower}>
-                <SelectTrigger className="h-9 w-[130px]"><SelectValue placeholder="Tower" /></SelectTrigger>
+                <SelectTrigger className="h-9 w-[130px]">
+                  <SelectValue placeholder="Tower" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All towers</SelectItem>
-                  {project.towers.map((t) => <SelectItem key={t} value={t}>Tower {t}</SelectItem>)}
+                  {project.towers.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      Tower {t}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Select value={config} onValueChange={setConfig}>
-                <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Config" /></SelectTrigger>
+                <SelectTrigger className="h-9 w-[140px]">
+                  <SelectValue placeholder="Config" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All configs</SelectItem>
-                  {configs.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {configs.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger className="h-9 w-[170px]"><SelectValue placeholder="Status" /></SelectTrigger>
+                <SelectTrigger className="h-9 w-[170px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All statuses</SelectItem>
-                  {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <div className="ml-auto flex flex-wrap items-center gap-2">
                 {STATUSES.map((s) => (
-                  <span key={s} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <span
+                    key={s}
+                    className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
+                  >
                     <span className={cn("size-2.5 rounded-sm border", STATUS_STYLE[s])} />
                     {s}
                   </span>
@@ -118,7 +193,18 @@ function InventoryPage() {
                 icon={SearchX}
                 title="No units match these filters"
                 description="Adjust the tower, configuration or status filter to see available inventory."
-                action={<Button size="sm" onClick={() => { setTower("all"); setConfig("all"); setStatus("all"); }}>Reset filters</Button>}
+                action={
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setTower("all");
+                      setConfig("all");
+                      setStatus("all");
+                    }}
+                  >
+                    Reset filters
+                  </Button>
+                }
               />
             ) : (
               <SectionCard title="Unit grid" description="Click a unit to open full details">
@@ -141,7 +227,9 @@ function InventoryPage() {
                           >
                             <p className="text-xs font-semibold">{u.code}</p>
                             <p className="num text-[11px] text-muted-foreground">{inr(u.price)}</p>
-                            <p className="mt-0.5 truncate text-[9px] font-semibold tracking-wide uppercase">{u.status}</p>
+                            <p className="mt-0.5 truncate text-[9px] font-semibold tracking-wide uppercase">
+                              {u.status}
+                            </p>
                           </button>
                         ))}
                       </div>
@@ -152,28 +240,7 @@ function InventoryPage() {
             )}
           </div>
 
-          <AIPanel title="AI Pricing Recommendation" subtitle={`Tower ${project.towers[0] ?? "A"}`}>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-md border border-border bg-card px-3 py-2">
-                <p className="label-xs">Current price</p>
-                <p className="num text-sm font-semibold">₹{num(project.ratePerSqft)}/sq.ft</p>
-              </div>
-              <div className="rounded-md border border-ai-border bg-card px-3 py-2">
-                <p className="label-xs text-ai">Recommended</p>
-                <p className="num text-sm font-semibold text-ai">₹{num(Math.round(project.ratePerSqft * 1.04))}/sq.ft</p>
-              </div>
-            </div>
-            <div className="mt-3"><ConfidenceBar value={82} /></div>
-            <dl className="mt-3 space-y-1.5 text-xs">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Demand (30d)</dt><dd className="font-semibold text-success">↑ 18%</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Available inventory</dt><dd className="font-semibold text-danger">↓ 12%</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Micro-market comparable</dt><dd className="font-semibold">₹{num(Math.round(project.ratePerSqft * 1.06))}</dd></div>
-            </dl>
-            <GovernanceNote requirement="Requires Sales Manager approval" />
-            <Button size="sm" className="mt-3 w-full" onClick={() => toast.success("Price approval submitted.")}>
-              Request approval
-            </Button>
-          </AIPanel>
+          <ProjectPricingPanel project={project} subtitle={`Tower ${project.towers[0] ?? "A"}`} />
         </div>
       </div>
 
@@ -190,10 +257,14 @@ function InventoryPage() {
               <div className="space-y-4 px-4 pb-6">
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
                   {[
-                    ["Project", project.name], ["Tower", `Tower ${selected.tower}`],
-                    ["Floor", String(selected.floor)], ["Configuration", selected.config],
-                    ["Carpet area", `${num(selected.carpet)} sq.ft`], ["Saleable area", `${num(selected.saleable)} sq.ft`],
-                    ["Facing", selected.facing], ["Parking", "1 covered"],
+                    ["Project", project.name],
+                    ["Tower", `Tower ${selected.tower}`],
+                    ["Floor", String(selected.floor)],
+                    ["Configuration", selected.config],
+                    ["Carpet area", `${num(selected.carpet)} sq.ft`],
+                    ["Saleable area", `${num(selected.saleable)} sq.ft`],
+                    ["Facing", selected.facing],
+                    ["Parking", "1 covered"],
                   ].map(([k, v]) => (
                     <div key={k}>
                       <dt className="label-xs">{k}</dt>
@@ -203,7 +274,9 @@ function InventoryPage() {
                 </dl>
 
                 <div className="rounded-lg border border-border">
-                  <div className="border-b border-border px-3 py-2 text-xs font-semibold">Price build-up</div>
+                  <div className="border-b border-border px-3 py-2 text-xs font-semibold">
+                    Price build-up
+                  </div>
                   <dl className="divide-y divide-border text-sm">
                     {[
                       ["Base price", selected.basePrice],
@@ -231,9 +304,15 @@ function InventoryPage() {
                     </p>
                   ) : (
                     <div className="mt-1 space-y-1 text-sm">
-                      <p>Customer: <b className="font-medium">Rahul Sharma</b></p>
-                      <p>Channel partner: <b className="font-medium">Rajan Properties</b></p>
-                      <p>Booking value: <b className="num font-medium">{inr(selected.price)}</b></p>
+                      <p>
+                        Customer: <b className="font-medium">Rahul Sharma</b>
+                      </p>
+                      <p>
+                        Channel partner: <b className="font-medium">Rajan Properties</b>
+                      </p>
+                      <p>
+                        Booking value: <b className="num font-medium">{inr(selected.price)}</b>
+                      </p>
                     </div>
                   )}
                 </div>
@@ -248,10 +327,19 @@ function InventoryPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button className="flex-1" size="sm" onClick={() => toast.success(`Unit ${selected.code} put on hold for 48 hours.`)}>
+                  <Button
+                    className="flex-1"
+                    size="sm"
+                    onClick={() => toast.success(`Unit ${selected.code} put on hold for 48 hours.`)}
+                  >
                     Hold unit
                   </Button>
-                  <Button className="flex-1" size="sm" variant="outline" onClick={() => toast.success("Booking form opened.")}>
+                  <Button
+                    className="flex-1"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toast.success("Booking form opened.")}
+                  >
                     Create booking
                   </Button>
                 </div>

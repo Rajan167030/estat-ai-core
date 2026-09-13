@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader, SectionCard, StatusBadge, Meter } from "@/components/common/primitives";
 import { AIPanel, ConfidenceBar, GovernanceNote } from "@/components/ai/ai-cards";
@@ -6,9 +7,21 @@ import { Button } from "@/components/ui/button";
 import { callById, campaignById } from "@/lib/mock/calling";
 import { projectName } from "@/lib/mock/data";
 import { relativeDays } from "@/lib/format";
-import { ArrowLeft, Phone, PhoneForwarded, Play, ShieldCheck, Sparkles, UserCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  Phone,
+  PhoneForwarded,
+  Play,
+  ShieldCheck,
+  Sparkles,
+  UserCheck,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { runCallRecommendation } from "@/api/insights";
+import type { ReasonedRecommendation } from "@/server/insights/per-item";
 
 export const Route = createFileRoute("/calling-agent/$callId")({
   loader: ({ params }) => {
@@ -19,14 +32,12 @@ export const Route = createFileRoute("/calling-agent/$callId")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [
-          { title: "Call unavailable — Estatum ERP" },
-          { name: "robots", content: "noindex" },
-        ],
+        meta: [{ title: "Call unavailable — Estatum ERP" }, { name: "robots", content: "noindex" }],
       };
     }
     const title = `${loaderData.call.leadName} — AI call ${loaderData.call.id} — Estatum ERP`;
-    const description = "Full AI call record: transcript, sentiment, objections, outcome and human handoff for this lead.";
+    const description =
+      "Full AI call record: transcript, sentiment, objections, outcome and human handoff for this lead.";
     return {
       meta: [
         { title },
@@ -58,12 +69,31 @@ function mmss(sec: number) {
 function CallDetail() {
   const { call } = Route.useLoaderData();
   const campaign = campaignById(call.campaignId);
-  const sentimentTone = call.sentiment === "Positive" ? "green" : call.sentiment === "Negative" ? "red" : "neutral";
+  const sentimentTone =
+    call.sentiment === "Positive" ? "green" : call.sentiment === "Negative" ? "red" : "neutral";
+  const [aiResult, setAiResult] = useState<ReasonedRecommendation | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  async function handleRegenerate() {
+    setAiLoading(true);
+    try {
+      const result = await runCallRecommendation({ data: { callId: call.id } });
+      setAiResult(result);
+      toast.success("Recommendation regenerated with AI.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to generate recommendation");
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   return (
     <AppShell>
       <div className="mb-4">
-        <Link to="/calling-agent" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <Link
+          to="/calling-agent"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft className="size-3.5" /> Back to calling agent
         </Link>
       </div>
@@ -73,13 +103,26 @@ function CallDetail() {
         subtitle={`${call.id} · ${call.phone} · ${projectName(call.projectId)}`}
         actions={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => toast.success("Recording playback started")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toast.success("Recording playback started")}
+            >
               <Play className="size-4" /> Play recording
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/leads/$leadId" params={{ leadId: call.leadId }}>Open lead</Link>
+              <Link to="/leads/$leadId" params={{ leadId: call.leadId }}>
+                Open lead
+              </Link>
             </Button>
-            <Button size="sm" onClick={() => toast.success(`Handoff requested — ${call.handoffTo ?? "sales manager"} will be notified`)}>
+            <Button
+              size="sm"
+              onClick={() =>
+                toast.success(
+                  `Handoff requested — ${call.handoffTo ?? "sales manager"} will be notified`,
+                )
+              }
+            >
               <PhoneForwarded className="size-4" /> Hand off to human
             </Button>
           </div>
@@ -91,15 +134,52 @@ function CallDetail() {
           <SectionCard title="Call summary" description={`Campaign: ${campaign?.name ?? "—"}`}>
             <div className="grid gap-4 sm:grid-cols-4">
               <Field label="Status" value={<StatusBadge status={call.status} />} />
-              <Field label="Outcome" value={call.outcome ? <StatusBadge status={call.outcome} /> : <span className="text-sm text-muted-foreground">In flight</span>} />
-              <Field label="Sentiment" value={call.sentiment ? <StatusBadge status={call.sentiment} tone={sentimentTone} /> : <span className="text-sm text-muted-foreground">—</span>} />
-              <Field label="Duration" value={<span className="num text-sm font-medium">{mmss(call.durationSec)}</span>} />
-              <Field label="Attempt" value={<span className="num text-sm font-medium">#{call.attempt}</span>} />
-              <Field label="Started" value={<span className="text-sm">{relativeDays(call.startedAt)}</span>} />
-              <Field label="Language" value={<span className="text-sm">{campaign?.language ?? "Hinglish"}</span>} />
-              <Field label="Voice" value={<span className="text-sm">{campaign?.voice ?? "Aarohi (female, warm)"}</span>} />
+              <Field
+                label="Outcome"
+                value={
+                  call.outcome ? (
+                    <StatusBadge status={call.outcome} />
+                  ) : (
+                    <span className="text-sm text-muted-foreground">In flight</span>
+                  )
+                }
+              />
+              <Field
+                label="Sentiment"
+                value={
+                  call.sentiment ? (
+                    <StatusBadge status={call.sentiment} tone={sentimentTone} />
+                  ) : (
+                    <span className="text-sm text-muted-foreground">—</span>
+                  )
+                }
+              />
+              <Field
+                label="Duration"
+                value={<span className="num text-sm font-medium">{mmss(call.durationSec)}</span>}
+              />
+              <Field
+                label="Attempt"
+                value={<span className="num text-sm font-medium">#{call.attempt}</span>}
+              />
+              <Field
+                label="Started"
+                value={<span className="text-sm">{relativeDays(call.startedAt)}</span>}
+              />
+              <Field
+                label="Language"
+                value={<span className="text-sm">{campaign?.language ?? "Hinglish"}</span>}
+              />
+              <Field
+                label="Voice"
+                value={
+                  <span className="text-sm">{campaign?.voice ?? "Aarohi (female, warm)"}</span>
+                }
+              />
             </div>
-            <p className="mt-4 rounded-md border border-border bg-muted/40 p-3 text-sm">{call.summary}</p>
+            <p className="mt-4 rounded-md border border-border bg-muted/40 p-3 text-sm">
+              {call.summary}
+            </p>
             <div className="mt-3">
               <p className="label-xs">Intent score</p>
               <div className="mt-1.5 flex items-center gap-3">
@@ -109,22 +189,35 @@ function CallDetail() {
             </div>
           </SectionCard>
 
-          <SectionCard title="Transcript" description="Auto-transcribed and translated on the fly. Recording retained for 90 days.">
+          <SectionCard
+            title="Transcript"
+            description="Auto-transcribed and translated on the fly. Recording retained for 90 days."
+          >
             {call.transcript.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No transcript yet — this call has not connected.</p>
+              <p className="text-sm text-muted-foreground">
+                No transcript yet — this call has not connected.
+              </p>
             ) : (
               <ol className="space-y-3">
                 {call.transcript.map((t, i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="num w-11 shrink-0 pt-1 text-xs text-muted-foreground">{t.at}</span>
+                    <span className="num w-11 shrink-0 pt-1 text-xs text-muted-foreground">
+                      {t.at}
+                    </span>
                     <div
                       className={cn(
                         "flex-1 rounded-md border p-3 text-sm",
-                        t.speaker === "Agent" ? "border-ai-border bg-ai-soft" : "border-border bg-card",
+                        t.speaker === "Agent"
+                          ? "border-ai-border bg-ai-soft"
+                          : "border-border bg-card",
                       )}
                     >
                       <p className="label-xs mb-1 flex items-center gap-1.5">
-                        {t.speaker === "Agent" ? <Sparkles className="size-3" /> : <Phone className="size-3" />}
+                        {t.speaker === "Agent" ? (
+                          <Sparkles className="size-3" />
+                        ) : (
+                          <Phone className="size-3" />
+                        )}
                         {t.speaker === "Agent" ? "AI agent" : call.leadName}
                       </p>
                       {t.text}
@@ -135,9 +228,14 @@ function CallDetail() {
             )}
           </SectionCard>
 
-          <SectionCard title="Objections detected" description="Extracted from the conversation for script tuning.">
+          <SectionCard
+            title="Objections detected"
+            description="Extracted from the conversation for script tuning."
+          >
             {call.objections.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No objections were raised on this call.</p>
+              <p className="text-sm text-muted-foreground">
+                No objections were raised on this call.
+              </p>
             ) : (
               <ul className="flex flex-wrap gap-2">
                 {call.objections.map((o, i) => (
@@ -152,23 +250,48 @@ function CallDetail() {
 
         <div className="space-y-4">
           <AIPanel title="Recommended next action" subtitle="Generated from this conversation">
-            <p className="text-sm font-medium">{call.nextAction}</p>
+            <p className="text-sm font-medium">{aiResult?.action ?? call.nextAction}</p>
             <div className="mt-3">
-              <ConfidenceBar value={Math.min(96, 55 + Math.round(call.intentScore * 0.4))} />
+              <ConfidenceBar
+                value={
+                  aiResult?.confidence ?? Math.min(96, 55 + Math.round(call.intentScore * 0.4))
+                }
+              />
             </div>
             <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
-              <li>• Intent score {call.intentScore}/100 from this conversation</li>
-              <li>• Outcome recorded as {call.outcome ?? call.status}</li>
-              <li>• {call.objections.length} objection(s) detected in transcript</li>
+              {(
+                aiResult?.reasons ?? [
+                  `Intent score ${call.intentScore}/100 from this conversation`,
+                  `Outcome recorded as ${call.outcome ?? call.status}`,
+                  `${call.objections.length} objection(s) detected in transcript`,
+                ]
+              ).map((r) => (
+                <li key={r}>• {r}</li>
+              ))}
             </ul>
             <div className="mt-4 flex gap-2">
-              <Button size="sm" onClick={() => toast.success("Sent for approval — Sales Manager notified")}>
+              <Button size="sm" variant="outline" onClick={handleRegenerate} disabled={aiLoading}>
+                {aiLoading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="size-4" />
+                )}
+              </Button>
+              <Button
+                size="sm"
+                className="flex-1"
+                onClick={() => toast.success("Sent for approval — Sales Manager notified")}
+              >
                 <ShieldCheck className="size-4" /> Request approval
               </Button>
-              <Button size="sm" variant="outline" onClick={() => toast("Recommendation dismissed")}>Dismiss</Button>
+              <Button size="sm" variant="outline" onClick={() => toast("Recommendation dismissed")}>
+                Dismiss
+              </Button>
             </div>
             <div className="mt-4">
-              <GovernanceNote requirement={campaign?.requiresApproval ?? "Sales Manager approval required"} />
+              <GovernanceNote
+                requirement={campaign?.requiresApproval ?? "Sales Manager approval required"}
+              />
             </div>
           </AIPanel>
 
@@ -179,10 +302,13 @@ function CallDetail() {
                 Assigned to <span className="font-medium">{call.handoffTo}</span>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No human handoff yet. The AI agent will retry as per campaign rules.</p>
+              <p className="text-sm text-muted-foreground">
+                No human handoff yet. The AI agent will retry as per campaign rules.
+              </p>
             )}
             <p className="mt-3 text-xs text-muted-foreground">
-              {campaign?.requiresApproval ?? "Sales Manager approval required to change the script."}
+              {campaign?.requiresApproval ??
+                "Sales Manager approval required to change the script."}
             </p>
           </SectionCard>
         </div>

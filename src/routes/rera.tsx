@@ -33,7 +33,7 @@ import {
   runAllReraScrapes,
   runListingScrapeFn,
   runAllListingScrapes,
-} from "@/server/api/scraper";
+} from "@/api/scraper";
 import type { ScrapeRunSummary } from "@/server/scraper/types";
 import type { ListingRunSummary } from "@/server/scraper/listings/pipeline";
 import { toast } from "sonner";
